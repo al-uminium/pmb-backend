@@ -10,5 +10,4 @@ public class Expenditure {
   UUID exid;
   Instant createdDate;
   Currency defaultCurrency;
-  Boolean isMarkedForDelete; //not sure if this param is needed
 }
