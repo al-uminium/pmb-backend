@@ -11,14 +11,14 @@ import ppm.backend.Model.User;
 
 @Service
 public class ExpenditureService {
-  
+
   public Map<User, Double> calcCostIncurredPerUser(List<Expense> expenses) {
     Map<User, Double> costMap = expenses.stream()
-                                        .flatMap(expense -> expense.getExpenseSplit().entrySet().stream())
-                                        .collect(Collectors.toMap(
-                                          Map.Entry::getKey, 
-                                          Map.Entry::getValue,
-                                          Double::sum));
+        .flatMap(expense -> expense.getExpenseSplit().entrySet().stream())
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            Double::sum));
 
     return costMap;
   }

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class User {
-  String userName; 
-  Boolean isRegistered; 
+  String userName;
+  Boolean isRegistered;
   UUID registeredUUID;
 }

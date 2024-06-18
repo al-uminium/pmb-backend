@@ -8,9 +8,11 @@ import lombok.Data;
 
 @Data
 public class Expenditure {
-  List<User> users; 
-  List<Expense> expenses;
   UUID exid;
-  Instant createdDate;
-  Currency defaultCurrency;
+  String defaultCurrency;
+  // Currency defaultCurrency;
+  String expenditureName;
+  // List<User> users;
+  // List<Expense> expenses;
+  // Instant createdDate;
 }

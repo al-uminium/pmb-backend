@@ -2,11 +2,11 @@ package ppm.backend.Repository.MySQLRepo;
 
 public interface SQLQueries {
   public static final String INSERT_INTO_EXPENDITURES = """
-    insert into Expenditure (expenditure_id, default_currency) VALUES (?, ?)
+    insert into Expenditures (expenditure_id, expenditure_name, default_currency) VALUES (?, ?, ?)
   """;
 
   public static final String INSERT_INTO_EXPENSES = """
-    insert into Expenses (expense_id, owner_id, mongo_split_id, total_cost, expenditure_id) VALUES (?, ?, ?, ?, ?)    
+    insert into Expense (expense_id, owner_id, expenditure_id, expense_name, total_cost) VALUES (?, ?, ?, ?, ?, ?)    
   """;
 
   public static final String INSERT_INTO_USER = """
@@ -14,6 +14,10 @@ public interface SQLQueries {
   """;
 
   public static final String INSERT_INTO_EXPENDITURE_USERS = """
-    insert into Expenditure_Users (expenditure_id, user)    
+    insert into Expenditure_Users (expenditure_id, user) VALUES (?, ?)
   """;  
+
+  public static final String INSERT_INTO_INVITES = """
+    insert into Invites (expenditure_id, invite_token) VALUES (?, ?)    
+  """;
 }

@@ -7,7 +7,7 @@ use ppm;
 create table User (
   user_id CHAR(36) NOT NULL, 
   username VARCHAR(100) NOT NULL, 
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255),
   hashpw VARCHAR(255),
   registration_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT unique_email UNIQUE (email),
@@ -16,6 +16,7 @@ create table User (
 
 create table Expenditures (
   expenditure_id CHAR(36) NOT NULL, 
+  expenditure_name VARCHAR(255) NOT NULL, 
   default_currency VARCHAR(3) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -26,8 +27,8 @@ CREATE TABLE Expense (
   expense_id CHAR(36) NOT NULL,
   owner_id VARCHAR(36) NOT NULL,
   total_cost INT NOT NULL,
-  mongo_split_id VARCHAR(36) NOT NULL,
   expenditure_id VARCHAR(36) NOT NULL,
+  expense_name VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (owner_id) REFERENCES User (user_id),
