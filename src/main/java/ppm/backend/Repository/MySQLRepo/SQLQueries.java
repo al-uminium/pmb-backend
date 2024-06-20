@@ -5,9 +5,13 @@ public interface SQLQueries {
     insert into Expenditures (expenditure_id, expenditure_name, default_currency) VALUES (?, ?, ?)
   """;
 
+  // public static final String INSERT_INTO_EXPENSES = """
+  //   insert into Expense (expense_id, owner_id, expenditure_id, expense_name, total_cost) VALUES (?, ?, ?, ?, ?, ?)    
+  // """;
+
   public static final String INSERT_INTO_EXPENSES = """
-    insert into Expense (expense_id, owner_id, expenditure_id, expense_name, total_cost) VALUES (?, ?, ?, ?, ?, ?)    
-  """;
+      insert into Expense (expense_id, owner_id, expenditure_id, total_cost, expense_name) VALUES (?, ?, ?, ?, ?)
+      """;
 
   public static final String INSERT_INTO_USER = """
     insert into User (user_id, username) VALUES (?, ?);    

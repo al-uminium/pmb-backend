@@ -15,7 +15,7 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     jdbcTemplate.update(INSERT_INTO_EXPENDITURES, expid.toString(), exName, currency);
   }
 
-  // insert into Expense (expense_id, owner_id, expenditure_id, expense_name, mongo_split_id, total_cost) VALUES (?, ?, ?, ?, ?, ?)
+  // insert into Expense (expense_id, owner_id, expenditure_id, total_cost, expense_name) VALUES (?, ?, ?, ?, ?)
   public void insertToExpenses(UUID eid, UUID uid, UUID exid, String eName, Integer totalCost) {
     jdbcTemplate.update(INSERT_INTO_EXPENSES, eid.toString(), uid.toString(), exid.toString(), eName, totalCost);
   }

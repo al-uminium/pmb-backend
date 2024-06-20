@@ -18,4 +18,8 @@ public class Expense {
     this.expenseOwnerID = UUID.fromString(expenseOwnerID);
   }
 
+  public void setExpenseOwnerID(UUID expenseOwnerID) {
+    this.expenseOwnerID = expenseOwnerID;
+  }
+
 }

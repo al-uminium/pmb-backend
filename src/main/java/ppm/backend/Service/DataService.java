@@ -30,15 +30,17 @@ public class DataService {
     return uid;
   }
 
-  public UUID createExpenseInMongo(Document doc) {
-    UUID eid = UUID.randomUUID();
+  public Document createExpenseInMongo(Document doc, UUID eid) {
     doc.append("eid", eid.toString());
     Document createdDoc = mongoRepo.insertExpense(doc);
-    return eid;
+    return createdDoc;
   }
-  // insert into Expense (expense_id, owner_id, expenditure_id, expense_name, mongo_split_id, total_cost) VALUES (?, ?, ?, ?, ?, ?)
-  public UUID createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Integer totalCost) {
-    sqlRepo.insertToExpenses(eid, uid, exid, eName, totalCost);;
-    return eid;
+
+  // insert into Expense (expense_id, owner_id, expenditure_id, expense_name,
+  // mongo_split_id, total_cost) VALUES (?, ?, ?, ?, ?, ?)
+  public void createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Integer totalCost) {
+    sqlRepo.insertToExpenses(eid, uid, exid, eName, totalCost);
+    ;
+    // return eid;
   }
 }
