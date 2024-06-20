@@ -9,11 +9,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ppm.backend.Model.Expenditure;
+import ppm.backend.Model.ExpenditureUser;
 import ppm.backend.Model.Expense;
 import ppm.backend.Model.User;
 import ppm.backend.Service.DataService;
 import ppm.backend.Service.UtilService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,16 +47,19 @@ public class ExpenditureController {
     return ResponseEntity.ok(exid);
   }
 
-  @PostMapping("/api/post/user")
+  @PostMapping("/api/post/expenditureuser")
   // {
-  // "userName": "testusername"
-  // }
-  public ResponseEntity<UUID> postUser(@RequestBody User user) {
-    UUID uid = dataSvc.createUser(user.getUserName());
-    return ResponseEntity.ok(uid);
+  // "userName": "testusername",
+  // "expenditureId": "a8516f9b-f15f-416d-88ac-b27af1dbae6f"
+  // } 
+  public ResponseEntity<JsonNode> postExpenditureUser(@RequestBody ExpenditureUser user) {
+    JsonNode createdUser = dataSvc.createUser(user.getUserName());
+    UUID uid = UUID.fromString(createdUser.get(user.getUserName()).asText().replaceAll("\"", ""));
+    dataSvc.insertUserToExpenditure(uid, user.getExpenditureId());
+    return ResponseEntity.ok(createdUser);
   }
 
-  @PostMapping("/api/post/expense")
+  @PostMapping("/api/post/expenditure/expense")
   // {
   // "expenseName": "chimken chop",
   // "expenseOwnerId": "bf7b74fa-c7e4-4d5a-91e4-036bdeb94e9a",
@@ -90,5 +95,5 @@ public class ExpenditureController {
       return ResponseEntity.badRequest().build();
     }
   }
-
+  
 }

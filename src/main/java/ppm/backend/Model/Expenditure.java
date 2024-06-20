@@ -1,7 +1,5 @@
 package ppm.backend.Model;
 
-import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import lombok.Data;

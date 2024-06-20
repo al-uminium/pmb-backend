@@ -1,5 +1,6 @@
 package ppm.backend.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,4 +40,15 @@ public class UtilService {
     expense.setTotalCost(totalCost);
     return expense;
   }
+
+  public List<String> getListOfUsers(JsonNode data) {
+    List<String> userList = new ArrayList<>(); 
+
+    for (JsonNode user : data) {
+      userList.add(user.textValue());
+    }
+
+    return userList;
+  }
+  
 }

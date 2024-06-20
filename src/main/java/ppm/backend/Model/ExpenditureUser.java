@@ -5,7 +5,6 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class User {
-  String userName;
-  UUID userId;
+public class ExpenditureUser extends User {
+  private UUID expenditureId; 
 }
