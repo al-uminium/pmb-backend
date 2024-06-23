@@ -31,4 +31,6 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
   public void insertToInvites(UUID exid, String inviteToken) {
     jdbcTemplate.update(INSERT_INTO_INVITES, exid.toString(), inviteToken);
   }
+
+  
 }

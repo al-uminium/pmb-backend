@@ -47,8 +47,10 @@ create table Expenditure_User (
 CREATE TABLE Invites (
   invite_token VARCHAR(255) NOT NULL,
   expenditure_id CHAR(36),
-  expire_at TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (expenditure_id) REFERENCES Expenditures (expenditure_id),
   PRIMARY KEY (expenditure_id)
 );
+
+  -- expire_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL 60 DAY, 
+  -- idk if i need this yet
