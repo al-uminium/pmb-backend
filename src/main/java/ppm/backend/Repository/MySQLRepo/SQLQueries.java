@@ -28,7 +28,7 @@ public interface SQLQueries {
 
   // FOR GET QUERIES
   public static final String GET_EXPENDITURE_ID_FROM_PATH = """
-          SELECT expenditure_id FROM Invites WHERE invite_token = "?";
+          SELECT expenditure_id FROM Invites WHERE invite_token = ?;
       """;
   
 }

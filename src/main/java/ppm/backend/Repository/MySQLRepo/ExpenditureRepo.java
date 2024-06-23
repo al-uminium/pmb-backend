@@ -1,10 +1,18 @@
 package ppm.backend.Repository.MySQLRepo;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
+
+import ppm.backend.Model.Expenditure;
+
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 @Repository
 public class ExpenditureRepo implements SQLQueries, SQLColumns {
@@ -32,5 +40,16 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     jdbcTemplate.update(INSERT_INTO_INVITES, exid.toString(), inviteToken);
   }
 
+  public List<Expenditure> getExpenditureFromPath(String path) {
+    List<Expenditure> expList = new LinkedList<>();
+    SqlRowSet rs = jdbcTemplate.queryForRowSet(GET_EXPENDITURE_ID_FROM_PATH, path);
+    if (rs.next()) {
+      Expenditure expenditure = new Expenditure();
+      UUID exid = UUID.fromString(rs.getString(EXPENDITURE_ID));
+      expenditure.setExid(exid);
+      expList.add(expenditure);
+    }
+    return expList;
+  }
   
 }

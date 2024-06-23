@@ -16,16 +16,16 @@ import ppm.backend.Model.User;
 @Service
 public class UtilService {
 
-  public Map<User, Double> calcCostIncurredPerUser(List<Expense> expenses) {
-    Map<User, Double> costMap = expenses.stream()
-        .flatMap(expense -> expense.getExpenseSplit().entrySet().stream())
-        .collect(Collectors.toMap(
-            Map.Entry::getKey,
-            Map.Entry::getValue,
-            Double::sum));
+  // public Map<User, Double> calcCostIncurredPerUser(List<Expense> expenses) {
+  //   Map<User, Double> costMap = expenses.stream()
+  //       .flatMap(expense -> expense.getExpenseSplit().entrySet().stream())
+  //       .collect(Collectors.toMap(
+  //           Map.Entry::getKey,
+  //           Map.Entry::getValue,
+  //           Double::sum));
 
-    return costMap;
-  }
+  //   return costMap;
+  // }
 
   public Expense convertJsonToExpense(JsonNode expenseJson) {
     Expense expense = new Expense(); 
@@ -50,5 +50,5 @@ public class UtilService {
 
     return userList;
   }
-  
+
 }

@@ -1,5 +1,6 @@
 package ppm.backend.Model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -10,7 +11,7 @@ public class Expense {
   String expenseName;
   UUID expenseOwnerID;
   Integer totalCost;
-  Map<User, Double> expenseSplit;
+  Map<String, Double> expenseSplit;
   UUID exid;
   UUID eid;
 

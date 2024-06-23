@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ppm.backend.Model.Expenditure;
 import ppm.backend.Repository.MySQLRepo.ExpenditureRepo;
 import ppm.backend.Repository.mongoRepo.ExpenseRepo;
 
@@ -58,7 +59,8 @@ public class DataService {
     sqlRepo.insertToExpenditureUsers(eid, uid);
   }
 
-  public Document createExpenseInMongo(Document doc, UUID eid) {
+  public Document createExpenseInMongo(Map<String, Double> map, UUID eid) {
+    Document doc = new Document(map);
     doc.append("eid", eid.toString());
     Document createdDoc = mongoRepo.insertExpense(doc);
     return createdDoc;
@@ -78,5 +80,9 @@ public class DataService {
       insertUserToExpenditure(UUID.fromString(user.asText()), eid);
     }
     sqlRepo.insertToInvites(eid, inviteToken);
+  }
+
+  public List<Expenditure> getExpenditureFromPath(String path) {
+    return sqlRepo.getExpenditureFromPath(path);
   }
 }
