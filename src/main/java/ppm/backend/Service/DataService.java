@@ -1,6 +1,7 @@
 package ppm.backend.Service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
+import ppm.backend.Model.User;
 import ppm.backend.Repository.MySQLRepo.ExpenditureRepo;
 import ppm.backend.Repository.MySQLRepo.SQLColumns;
 import ppm.backend.Repository.mongoRepo.ExpenseRepo;
@@ -102,7 +104,45 @@ public class DataService implements SQLColumns{
 
   public List<Expense> getExpenseDetails(String path){
     SqlRowSet rs = sqlRepo.getExpensesForExpenditure(path);
+    List<Expense> expenseList = convertRowSetToExpenseList(rs);
+    return expenseList;
+  }
+
+  public List<User> getExpenseSummaryOfAllUsers(String path) {
+    List<User> userList = getUsersForExpenditure(path);
+    
+    for (User user : userList) {
+      SqlRowSet rs = sqlRepo.getExpensesForUser(path, user.getUserId());
+      List<Expense> expenseList = convertRowSetToExpenseList(rs);
+      Double accTotalCost = utilSvc.calcAccumulatedTotalCost(expenseList);
+      Map<String, Double> accumulatedCredit = utilSvc.calcCostIncurredPerUser(expenseList);
+      user.setAccumulatedCredit(accumulatedCredit);
+      user.setAccumulatedTotalCost(accTotalCost);
+    }
+    return userList;
+  }
+
+  public List<User> getUsersForExpenditure(String path) {
+    List<User> usersList = new ArrayList<>();
+    SqlRowSet rs = sqlRepo.getUsersOfExpenditure(path);
+
+    while(rs.next()) {
+      UUID uid = UUID.fromString(rs.getString(USER_ID));
+      String userName = rs.getString(USERNAME);
+      User user = new User();
+      user.setUserId(uid);
+      user.setUserName(userName);
+      usersList.add(user);
+    }
+
+    return usersList;
+  }
+
+
+  // Not putting it under Expense bc there's a mongo call inside ):
+  public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {
     List<Expense> expenseList = new LinkedList<>();
+
     while (rs.next()) {
       UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
       UUID ownerId = UUID.fromString(rs.getString(EXPENSE_OWNER_ID));
@@ -119,8 +159,9 @@ public class DataService implements SQLColumns{
         exp.setExpenseSplit(expenseSplit);
         expenseList.add(exp);
       }
-      System.out.println("Sanity check: "+exp.toString());
+      System.out.println("Sanity check: " + exp.toString());
     }
+
     return expenseList;
-  }
+  } 
 }

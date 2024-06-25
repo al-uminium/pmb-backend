@@ -2,12 +2,14 @@ package ppm.backend.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,16 +20,16 @@ import ppm.backend.Model.User;
 @Service
 public class UtilService {
 
-  // public Map<User, Double> calcCostIncurredPerUser(List<Expense> expenses) {
-  //   Map<User, Double> costMap = expenses.stream()
-  //       .flatMap(expense -> expense.getExpenseSplit().entrySet().stream())
-  //       .collect(Collectors.toMap(
-  //           Map.Entry::getKey,
-  //           Map.Entry::getValue,
-  //           Double::sum));
+  public Map<String, Double> calcCostIncurredPerUser(List<Expense> expenses) {
+    Map<String, Double> costMap = expenses.stream()
+        .flatMap(expense -> expense.getExpenseSplit().entrySet().stream())
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            Map.Entry::getValue,
+            Double::sum));
 
-  //   return costMap;
-  // }
+    return costMap;
+  }
 
   public Expense convertJsonToExpense(JsonNode expenseJson) {
     Expense expense = new Expense(); 
@@ -65,5 +67,50 @@ public class UtilService {
       }
     }
     return res;
+  }
+
+  public Map<String, Double> calcSummaryForUser(List<User> userList, UUID uid) {
+    Map<String, Double> costMap = new HashMap<>();
+    User targetUser = new User();
+    List<User> otherUsers = new ArrayList<>();
+
+    for (User user : userList) {
+      if (user.getUserId().equals(uid)) {
+        targetUser = user;
+        System.out.println("Found target user: " + targetUser.toString());
+      } else {
+        otherUsers.add(user);
+      }
+    }
+
+    System.out.println("Sanity check... " + otherUsers.toString());
+
+    for (User user : otherUsers) {
+      Map<String, Double> accCost = user.getAccumulatedCredit();
+      System.out.println("Currently in " + user.getUserName());
+      for (Map.Entry<String, Double> userDebt : accCost.entrySet()) {
+        System.out.println("Going thru " + user.getUserName() + "'s accumulated credit...");
+        if (userDebt.getKey().equals(targetUser.getUserName())) {
+          System.out.println(targetUser.getUserName() + " owes " + user.getUserName() + " " +  userDebt.getValue());
+          Double debt = userDebt.getValue();
+          Double credit = targetUser.getAccumulatedCredit().get(user.getUserName());
+          System.out.println("Sanity check... ");
+          System.out.println(targetUser.getUserName() + ": " + credit);
+          System.out.println(user.getUserName() + ": -" + debt);
+          costMap.put(user.getUserName(), credit - debt);
+        }
+      }
+    }
+
+    return costMap;
+  }
+  
+  public Double calcAccumulatedTotalCost(List<Expense> expList) {
+    Double accCost = 0.0;
+    for (Expense expense : expList) {
+      Double totalCost = expense.getTotalCost();
+      accCost += totalCost;
+    }
+    return accCost;
   }
 }

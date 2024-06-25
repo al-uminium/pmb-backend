@@ -46,13 +46,6 @@ public class PostController {
     return null;
 
   }
-
-  // String expenseName;
-  // UUID expenseOwnerID;
-  // Integer totalCost;
-  // Map<User, Double> expenseSplit;
-  // UUID exid;
-  // UUID eid;
   
   @PostMapping("/expense/{path}")
   public ResponseEntity<String> createExpense(@RequestBody Expense expense, @PathVariable String path) {
