@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bson.Document;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
 import ppm.backend.Model.User;
 import ppm.backend.Repository.MySQLRepo.ExpenditureRepo;

@@ -19,7 +19,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GetController {
   @Autowired
   private DataService dataSvc;
-  
+
   @Autowired
   private UtilService utilSvc;
 
@@ -48,9 +47,6 @@ public class GetController {
   @GetMapping("/expenditure/summary/{path}&{uid}")
   public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
     List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
-    for (User user : userList) {
-      System.out.println(user);
-    }
 
     Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
     try {
