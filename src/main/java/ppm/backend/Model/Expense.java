@@ -10,7 +10,7 @@ import lombok.Data;
 public class Expense {
   String expenseName;
   UUID expenseOwnerID;
-  Integer totalCost;
+  Double totalCost;
   Map<String, Double> expenseSplit;
   UUID exid;
   UUID eid;

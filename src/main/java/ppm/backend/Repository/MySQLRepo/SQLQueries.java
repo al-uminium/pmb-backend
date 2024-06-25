@@ -30,5 +30,10 @@ public interface SQLQueries {
   public static final String GET_EXPENDITURE_ID_FROM_PATH = """
           SELECT expenditure_id FROM Invites WHERE invite_token = ?;
       """;
-  
+  public static final String GET_EXPENSES_FOR_EXPENDITURE = """
+      SELECT e.expense_id, e.expense_name, e.owner_id, e.total_cost
+      FROM Expense e
+      JOIN Invites i ON e.expenditure_id = i.expenditure_id
+      WHERE i.invite_token = ?;
+      """;
 }

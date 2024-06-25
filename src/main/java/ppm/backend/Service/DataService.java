@@ -2,12 +2,15 @@ package ppm.backend.Service;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +18,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ppm.backend.Model.Expenditure;
+import ppm.backend.Model.Expense;
 import ppm.backend.Repository.MySQLRepo.ExpenditureRepo;
+import ppm.backend.Repository.MySQLRepo.SQLColumns;
 import ppm.backend.Repository.mongoRepo.ExpenseRepo;
 
 @Service
-public class DataService {
+public class DataService implements SQLColumns{
 
   @Autowired
   private ExpenditureRepo sqlRepo;
 
   @Autowired
   private ExpenseRepo mongoRepo;
+
+  @Autowired
+  private UtilService utilSvc;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -59,14 +67,15 @@ public class DataService {
     sqlRepo.insertToExpenditureUsers(eid, uid);
   }
 
-  public Document createExpenseInMongo(Map<String, Double> map, UUID eid) {
+  public Document createExpenseInMongo(Map<String, Double> map, UUID eid, UUID exid) {
     Document doc = new Document(map);
     doc.append("eid", eid.toString());
+    doc.append("exid", exid.toString());
     Document createdDoc = mongoRepo.insertExpense(doc);
     return createdDoc;
   }
 
-  public void createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Integer totalCost) {
+  public void createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Double totalCost) {
     sqlRepo.insertToExpenses(eid, uid, exid, eName, totalCost);
     // return eid;
   }
@@ -82,7 +91,36 @@ public class DataService {
     sqlRepo.insertToInvites(eid, inviteToken);
   }
 
-  public List<Expenditure> getExpenditureFromPath(String path) {
-    return sqlRepo.getExpenditureFromPath(path);
+  public UUID getExpenditureFromPath(String path) {
+    SqlRowSet rs = sqlRepo.getExpenditureFromPath(path);
+    if (rs.next()) {
+      UUID exid = UUID.fromString(rs.getString(EXPENDITURE_ID));
+      return exid;
+    }
+    return null;
+  }
+
+  public List<Expense> getExpenseDetails(String path){
+    SqlRowSet rs = sqlRepo.getExpensesForExpenditure(path);
+    List<Expense> expenseList = new LinkedList<>();
+    while (rs.next()) {
+      UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
+      UUID ownerId = UUID.fromString(rs.getString(EXPENSE_OWNER_ID));
+      String expenseName = rs.getString(EXPENSE_NAME);
+      Double totalCost = rs.getDouble(TOTAL_COST);
+      List<Document> expenseSplitList = mongoRepo.getExpense(eid);
+      Expense exp = new Expense();
+      if (expenseSplitList.size() > 0) {
+        Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitList.getFirst());
+        exp.setEid(eid);
+        exp.setTotalCost(totalCost);
+        exp.setExpenseOwnerID(ownerId);
+        exp.setExpenseName(expenseName);
+        exp.setExpenseSplit(expenseSplit);
+        expenseList.add(exp);
+      }
+      System.out.println("Sanity check: "+exp.toString());
+    }
+    return expenseList;
   }
 }

@@ -10,12 +10,14 @@ public interface SQLColumns {
 
   // expense
   public static final String EXPENSE_ID = "expense_id";
+  public static final String EXPENSE_NAME = "expense_name";
   public static final String MONGO_SPLIT_ID = "mongo_split_id";
   public static final String TOTAL_COST = "total_cost";
   public static final String EXPENDITURE_ID = "expenditure_id";
   public static final String CREATED_AT = "created_at";
   public static final String UPDATED_AT = "updated_at";
-
+  public static final String EXPENSE_OWNER_ID = "owner_id";
+  
   // expenditures
   public static final String DEFAULT_CURRENCY = "default_currency";
 

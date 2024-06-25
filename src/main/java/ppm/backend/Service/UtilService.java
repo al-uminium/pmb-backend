@@ -1,11 +1,13 @@
 package ppm.backend.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bson.Document;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,7 +34,7 @@ public class UtilService {
     String expenseName = expenseJson.get("expenseName").asText();
     UUID expenseOwnerId = UUID.fromString(expenseJson.get("expenseOwnerId").toString().replaceAll("\"", ""));
     UUID exid = UUID.fromString(expenseJson.get("exid").toString().replaceAll("\"", ""));
-    Integer totalCost = expenseJson.get("totalCost").asInt();
+    Double totalCost = expenseJson.get("totalCost").asDouble();
 
     expense.setExpenseName(expenseName);
     expense.setExpenseOwnerID(expenseOwnerId);
@@ -51,4 +53,17 @@ public class UtilService {
     return userList;
   }
 
+  public UUID getExpenditureID(List<Expense> expList) {
+    return expList.getFirst().getExid();
+  }
+
+  public Map<String, Double> convertDocumentToMap(Document doc) {
+    Map<String, Double> res = new HashMap<>();
+    for(Map.Entry<String,Object> entry : doc.entrySet()) {
+      if (entry.getValue() instanceof Double) {
+        res.put(entry.getKey(), (Double) entry.getValue());
+      }
+    }
+    return res;
+  }
 }

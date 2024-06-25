@@ -56,14 +56,11 @@ public class PostController {
   
   @PostMapping("/expense/{path}")
   public ResponseEntity<String> createExpense(@RequestBody Expense expense, @PathVariable String path) {
-      List<Expenditure> expList = dataSvc.getExpenditureFromPath(path);
+      UUID exid = dataSvc.getExpenditureFromPath(path);
       System.out.println(expense.getExpenseOwnerID());
-      if (expList.size() > 0) {
-        UUID exid = expList.getFirst().getExid();
-        UUID eid = UUID.randomUUID();
-        dataSvc.createExpenseInDB(eid, expense.getExpenseOwnerID(), exid, expense.getExpenseName(), expense.getTotalCost());
-        dataSvc.createExpenseInMongo(expense.getExpenseSplit(), eid);
-      }
+      UUID eid = UUID.randomUUID();
+      dataSvc.createExpenseInDB(eid, expense.getExpenseOwnerID(), exid, expense.getExpenseName(), expense.getTotalCost());
+      dataSvc.createExpenseInMongo(expense.getExpenseSplit(), eid, exid);
       return ResponseEntity.ok(expense.toString());
   }
   

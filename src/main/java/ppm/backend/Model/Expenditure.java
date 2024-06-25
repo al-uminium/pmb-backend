@@ -12,6 +12,6 @@ public class Expenditure {
   String expenditureName;
   List<String> users;
   String inviteToken;
-  // List<Expense> expenses;
+  List<Expense> expenses;
   // Instant createdDate;
 }
