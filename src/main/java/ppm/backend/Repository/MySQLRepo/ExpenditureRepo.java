@@ -49,4 +49,8 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
   public SqlRowSet getUsersOfExpenditure(String path) {
     return jdbcTemplate.queryForRowSet(GET_USERS_FOR_EXPENDITURE, path);
   }
+
+  public SqlRowSet getExpenditureDetails(String path) {
+    return jdbcTemplate.queryForRowSet(GET_EXPENDITURE_DETAILS, path);
+  }
 }

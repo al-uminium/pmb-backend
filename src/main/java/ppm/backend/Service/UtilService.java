@@ -1,8 +1,13 @@
 package ppm.backend.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -110,5 +115,12 @@ public class UtilService {
       accCost += totalCost;
     }
     return accCost;
+  }
+
+  public Instant convertStringToInstant(String date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+    LocalDateTime localDateTime = LocalDateTime.parse(date, formatter);
+    Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
+    return instant;
   }
 }

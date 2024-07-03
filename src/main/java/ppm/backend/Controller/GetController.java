@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
 import ppm.backend.Model.User;
 import ppm.backend.Service.DataService;
@@ -19,6 +20,9 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 
 @RestController
@@ -32,7 +36,7 @@ public class GetController {
 
   private ObjectMapper mapper = new ObjectMapper();
   
-  @GetMapping("/expenditure/{path}")
+  @GetMapping("/expenditure/expenses/{path}")
   public String getExpensesForExpenditure(@PathVariable String path) {
     List<Expense> expenseList = dataSvc.getExpenseDetails(path);
     try {
@@ -55,6 +59,32 @@ public class GetController {
     } catch (JsonProcessingException e) {
       e.printStackTrace();
       return "aaaa";
+    }
+  }
+
+  @GetMapping("/expenditure/users/{path}")
+  public String getUsersForExpenditure(@PathVariable String path) {
+      List<User> userList = dataSvc.getUsersForExpenditure(path);
+      
+      try {
+        String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userList);
+        return jsonString;
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+        return "Unable to get users for %s".formatted(path);
+      }
+  }
+  
+  @GetMapping("/expenditure/{path}")
+  public String getMethodName(@PathVariable String path) {
+    Expenditure expenditure = dataSvc.getExpenditureDetails(path);
+
+    try {
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expenditure);
+      return jsonString;
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return "Unable to get expenditure";
     }
   }
   

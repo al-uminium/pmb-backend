@@ -60,4 +60,12 @@ public interface SQLQueries {
       JOIN User u ON u.user_id = eu.user_id
       WHERE i.invite_token = ?;
     """;
+
+  public static final String GET_EXPENDITURE_DETAILS = 
+  """
+    SELECT ex.expenditure_id, ex.expenditure_name, ex.default_currency, ex.created_at, ex.updated_at
+    FROM Expenditures ex
+    JOIN Invites i on ex.expenditure_id = i.expenditure_id
+    WHERE i.invite_token = ?;    
+  """;
 }

@@ -1,6 +1,8 @@
 package ppm.backend.Service;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
 import ppm.backend.Model.User;
 import ppm.backend.Repository.MySQLRepo.ExpenditureRepo;
@@ -98,6 +101,29 @@ public class DataService implements SQLColumns{
       return exid;
     }
     return null;
+  }
+
+  @SuppressWarnings("null")
+  public Expenditure getExpenditureDetails(String path) {
+    Expenditure expenditure = new Expenditure();
+    SqlRowSet rs = sqlRepo.getExpenditureDetails(path);
+    List<User> userList = getUsersForExpenditure(path);
+    if (rs.next()) {
+      UUID exid = UUID.fromString(rs.getString(EXPENDITURE_ID));
+      String eName = rs.getString(EXPENDITURE_NAME);
+      String defCurrency = rs.getString(DEFAULT_CURRENCY);
+
+      // I'll deal with the date issue next time...
+      // Instant createdDate = utilSvc.convertStringToInstant(rs.getString(CREATED_AT));
+      // Instant updateDate = utilSvc.convertStringToInstant(rs.getString(UPDATED_AT));
+      // expenditure.setCreatedDate(createdDate);
+      // expenditure.setUpdatedDate(updateDate);
+      expenditure.setDefaultCurrency(defCurrency);
+      expenditure.setExid(exid);
+      expenditure.setExpenditureName(eName);
+      expenditure.setExpenditureUsers(userList);
+    }
+    return expenditure;
   }
 
   public List<Expense> getExpenseDetails(String path){

@@ -20,6 +20,7 @@ public interface SQLColumns {
   
   // expenditures
   public static final String DEFAULT_CURRENCY = "default_currency";
+  public static final String EXPENDITURE_NAME = "expenditure_name";
 
   // invites
   public static final String INVITE_TOKEN = "invite_token";
