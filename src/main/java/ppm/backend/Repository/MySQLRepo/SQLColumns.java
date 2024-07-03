@@ -17,6 +17,7 @@ public interface SQLColumns {
   public static final String CREATED_AT = "created_at";
   public static final String UPDATED_AT = "updated_at";
   public static final String EXPENSE_OWNER_ID = "owner_id";
+  public static final String EXPENSE_OWNER_USERNAME = "owner_username";
   
   // expenditures
   public static final String DEFAULT_CURRENCY = "default_currency";

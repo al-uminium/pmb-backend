@@ -12,5 +12,14 @@ public class User {
   String userName;
   UUID userId;
   Double accumulatedTotalCost;
-  Map<String, Double> accumulatedCredit; 
+  Map<String, Double> accumulatedCredit;
+
+  public User(){}
+
+  public User(String userName, UUID userId) {
+    this.userName = userName;
+    this.userId = userId;
+  } 
+
+
 }

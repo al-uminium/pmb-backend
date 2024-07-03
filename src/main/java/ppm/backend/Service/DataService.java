@@ -103,11 +103,11 @@ public class DataService implements SQLColumns{
     return null;
   }
 
-  @SuppressWarnings("null")
   public Expenditure getExpenditureDetails(String path) {
     Expenditure expenditure = new Expenditure();
     SqlRowSet rs = sqlRepo.getExpenditureDetails(path);
     List<User> userList = getUsersForExpenditure(path);
+    List<Expense> expenseList = getExpenseDetails(path);
     if (rs.next()) {
       UUID exid = UUID.fromString(rs.getString(EXPENDITURE_ID));
       String eName = rs.getString(EXPENDITURE_NAME);
@@ -122,6 +122,7 @@ public class DataService implements SQLColumns{
       expenditure.setExid(exid);
       expenditure.setExpenditureName(eName);
       expenditure.setExpenditureUsers(userList);
+      expenditure.setExpenses(expenseList);
     }
     return expenditure;
   }
@@ -153,9 +154,7 @@ public class DataService implements SQLColumns{
     while(rs.next()) {
       UUID uid = UUID.fromString(rs.getString(USER_ID));
       String userName = rs.getString(USERNAME);
-      User user = new User();
-      user.setUserId(uid);
-      user.setUserName(userName);
+      User user = new User(userName, uid);
       usersList.add(user);
     }
 
@@ -166,24 +165,55 @@ public class DataService implements SQLColumns{
   // Not putting it under Expense bc there's a mongo call inside ):
   public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {
     List<Expense> expenseList = new LinkedList<>();
+    UUID eidTracker = UUID.randomUUID();
+    Expense exp = new Expense();
+    List<User> userList = new LinkedList<>();
 
     while (rs.next()) {
+      //Initialize 
       UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
-      UUID ownerId = UUID.fromString(rs.getString(EXPENSE_OWNER_ID));
-      String expenseName = rs.getString(EXPENSE_NAME);
-      Double totalCost = rs.getDouble(TOTAL_COST);
-      List<Document> expenseSplitList = mongoRepo.getExpense(eid);
-      Expense exp = new Expense();
-      if (expenseSplitList.size() > 0) {
-        Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitList.getFirst());
-        exp.setEid(eid);
-        exp.setTotalCost(totalCost);
-        exp.setExpenseOwnerID(ownerId);
-        exp.setExpenseName(expenseName);
-        exp.setExpenseSplit(expenseSplit);
-        expenseList.add(exp);
+      System.out.println("Null check results: " + eidTracker == null);
+      // System.out.println("Checking if eidTracker == eid: " + eidTracker.equals(eid));
+      // Check if the same, if same, just add user, if not, add rest of the expense details
+      if (!eidTracker.equals(eid)) {
+        System.out.println("checking if it got here");
+        eidTracker = eid;
+        UUID ownerId = UUID.fromString(rs.getString(EXPENSE_OWNER_ID));
+        String ownerUserName = rs.getString(EXPENSE_OWNER_USERNAME);
+        String expenseName = rs.getString(EXPENSE_NAME);
+        Double totalCost = rs.getDouble(TOTAL_COST);
+        String userName = rs.getString(USERNAME);
+        UUID userId = UUID.fromString(rs.getString(USER_ID));
+        List<Document> expenseSplitList = mongoRepo.getExpense(eid);
+        if (expenseSplitList.size() > 0) {
+          Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitList.getFirst());
+
+          User owner = new User(ownerUserName, ownerId);
+          User user = new User(userName, userId);
+          exp.setExpenseOwner(owner);
+          exp.setEid(eid);
+          exp.setTotalCost(totalCost);
+          exp.setExpenseOwnerID(ownerId);
+          exp.setExpenseName(expenseName);
+          exp.setExpenseSplit(expenseSplit);
+          userList.add(user);
+        }
+        System.out.println("Sanity check: " + exp.toString());
+      } else {
+        System.out.println("checking if it got here too");
+        String userName = rs.getString(USERNAME);
+        UUID userId = UUID.fromString(rs.getString(USER_ID));
+        User user = new User(userName, userId);
+        userList.add(user);
+        exp.setUsersInvolved(userList);
+        if (exp.getExpenseName() != null){
+          expenseList.add(exp);
+        }
+        
+        // reset
+        userList = new LinkedList<>();
+        exp = new Expense();
       }
-      System.out.println("Sanity check: " + exp.toString());
     }
 
     return expenseList;

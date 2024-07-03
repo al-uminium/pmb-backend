@@ -30,7 +30,7 @@ public class PostController {
   @PostMapping(value = "/initializeexpenditure", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> createExpenditure(@RequestBody Expenditure expenditure) {
     try {
-      System.out.println(expenditure.toString());
+      System.out.println(expenditure);
       dataSvc.initializeNewExpenditure(expenditure.getExpenditureName(),
           expenditure.getDefaultCurrency(),
           expenditure.getUsers(),

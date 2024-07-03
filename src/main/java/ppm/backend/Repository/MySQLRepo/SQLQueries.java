@@ -36,13 +36,36 @@ public interface SQLQueries {
     """
       SELECT expenditure_id FROM Invites WHERE invite_token = ?;
     """;
+    
+  // public static final String GET_EXPENSES_FOR_EXPENDITURE = 
+  //   """
+  //     SELECT e.expense_id, e.expense_name, e.owner_id, e.total_cost
+  //     FROM Expense e
+  //     JOIN Invites i ON e.expenditure_id = i.expenditure_id
+  //     WHERE i.invite_token = ?;
+  //   """;
+
   public static final String GET_EXPENSES_FOR_EXPENDITURE = 
-    """
-      SELECT e.expense_id, e.expense_name, e.owner_id, e.total_cost
-      FROM Expense e
-      JOIN Invites i ON e.expenditure_id = i.expenditure_id
-      WHERE i.invite_token = ?;
-    """;
+  """
+    SELECT 
+      e.expense_id, 
+      e.owner_id, 
+      u_owner.username AS owner_username,
+      e.total_cost, 
+      e.expenditure_id, 
+      e.expense_name,
+      u.username AS username, 
+      eu.user_id, 
+      u.email, 
+      e.created_at
+    FROM Expense e
+    JOIN Expenditure_User eu ON e.expenditure_id = eu.expenditure_id
+    JOIN User u ON eu.user_id = u.user_id
+    JOIN Invites i ON eu.expenditure_id = i.expenditure_id
+    JOIN User u_owner ON e.owner_id = u_owner.user_id  
+    WHERE i.invite_token = ?
+    ORDER BY e.created_at;
+  """;
 
   public static final String GET_EXPENSES_FOR_EXPENDITURE_FOR_USER = 
     """
