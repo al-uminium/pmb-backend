@@ -36,6 +36,14 @@ CREATE TABLE Expense (
   PRIMARY KEY (expense_id)
 );
 
+CREATE TABLE Expense_Users (
+  expense_id CHAR(36) NOT NULL,
+  user_id CHAR(36) NOT NULL,
+  PRIMARY KEY (expense_id, user_id),
+  FOREIGN KEY (expense_id) REFERENCES Expense (expense_id),
+  FOREIGN KEY (user_id) REFERENCES User (user_id)
+);
+
 create table Expenditure_User (
   expenditure_id CHAR(36), 
   user_id CHAR(36), 

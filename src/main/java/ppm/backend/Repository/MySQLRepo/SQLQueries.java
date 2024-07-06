@@ -16,6 +16,11 @@ public interface SQLQueries {
       insert into Expense (expense_id, owner_id, expenditure_id, total_cost, expense_name) VALUES (?, ?, ?, ?, ?)
     """;
 
+  public static final String INSERT_INTO_EXPENSE_USERS = 
+    """
+      insert into Expense_Users (expense_id, user_id) VALUES (?, ?)
+    """;
+  
   public static final String INSERT_INTO_USER =
     """
       insert into User (user_id, username) VALUES (?, ?);
@@ -47,22 +52,20 @@ public interface SQLQueries {
 
   public static final String GET_EXPENSES_FOR_EXPENDITURE = 
   """
-    SELECT 
+    SELECT
       e.expense_id, 
-      e.owner_id, 
-      u_owner.username AS owner_username,
-      e.total_cost, 
       e.expenditure_id, 
-      e.expense_name,
-      u.username AS username, 
-      eu.user_id, 
-      u.email, 
-      e.created_at
+      e.expense_name, 
+      e.total_cost,
+      e.owner_id,
+      u_owner.username AS owner_username,
+      eu.user_id,
+      u_user.username AS username
     FROM Expense e
-    JOIN Expenditure_User eu ON e.expenditure_id = eu.expenditure_id
-    JOIN User u ON eu.user_id = u.user_id
-    JOIN Invites i ON eu.expenditure_id = i.expenditure_id
-    JOIN User u_owner ON e.owner_id = u_owner.user_id  
+    JOIN Invites i ON e.expenditure_id = i.expenditure_id
+    JOIN Expense_Users eu ON e.expense_id = eu.expense_id
+    JOIN User u_owner ON e.owner_id = u_owner.user_id
+    JOIN User u_user ON eu.user_id = u_user.user_id
     WHERE i.invite_token = ?
     ORDER BY e.created_at;
   """;

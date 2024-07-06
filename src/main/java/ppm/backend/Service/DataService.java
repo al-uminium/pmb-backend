@@ -54,12 +54,12 @@ public class DataService implements SQLColumns{
     return mapper.valueToTree(insertedUser);
   }
 
-  public JsonNode createUsers(List<String> users) {
+  public JsonNode createUsers(List<User> users) {
     Map<String, UUID> insertedUsers = new HashMap<>();
-    for (String user : users) {
+    for (User user : users) {
       UUID userId = UUID.randomUUID();
-      sqlRepo.insertToUser(userId, user);
-      insertedUsers.put(user, userId);
+      sqlRepo.insertToUser(userId, user.getUserName());
+      insertedUsers.put(user.getUserName(), userId);
     }
     System.out.println(insertedUsers.toString());
     return mapper.valueToTree(insertedUsers);
@@ -78,13 +78,19 @@ public class DataService implements SQLColumns{
     return createdDoc;
   }
 
-  public void createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Double totalCost) {
+  @Transactional(rollbackFor = SQLException.class)
+  public void createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Double totalCost, List<User> usersInvolved) {
     sqlRepo.insertToExpenses(eid, uid, exid, eName, totalCost);
+
+    for (User user : usersInvolved) {
+      System.out.println("Sanity check... " + eid);
+      sqlRepo.insertToExpenseUsers(eid, user.getUserId());
+    }
     // return eid;
   }
 
   @Transactional(rollbackFor = SQLException.class)
-  public void initializeNewExpenditure(String expenditureName, String currency, List<String> users, String inviteToken) throws SQLException {
+  public void initializeNewExpenditure(String expenditureName, String currency, List<User> users, String inviteToken) throws SQLException {
     UUID eid = createExpenditure(expenditureName, currency);
     JsonNode createdUsers = createUsers(users);
     for (JsonNode user : createdUsers) {
@@ -121,7 +127,7 @@ public class DataService implements SQLColumns{
       expenditure.setDefaultCurrency(defCurrency);
       expenditure.setExid(exid);
       expenditure.setExpenditureName(eName);
-      expenditure.setExpenditureUsers(userList);
+      expenditure.setUsers(userList);
       expenditure.setExpenses(expenseList);
     }
     return expenditure;
@@ -165,57 +171,40 @@ public class DataService implements SQLColumns{
   // Not putting it under Expense bc there's a mongo call inside ):
   public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {
     List<Expense> expenseList = new LinkedList<>();
-    UUID eidTracker = UUID.randomUUID();
+    UUID eidTracker = null;
     Expense exp = new Expense();
     List<User> userList = new LinkedList<>();
 
     while (rs.next()) {
-      //Initialize 
       UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
-      System.out.println("Null check results: " + eidTracker == null);
-      // System.out.println("Checking if eidTracker == eid: " + eidTracker.equals(eid));
-      // Check if the same, if same, just add user, if not, add rest of the expense details
-      if (!eidTracker.equals(eid)) {
-        System.out.println("checking if it got here");
+      
+      // first if is to initialize
+      if (eidTracker == null) {
         eidTracker = eid;
-        UUID ownerId = UUID.fromString(rs.getString(EXPENSE_OWNER_ID));
-        String ownerUserName = rs.getString(EXPENSE_OWNER_USERNAME);
-        String expenseName = rs.getString(EXPENSE_NAME);
-        Double totalCost = rs.getDouble(TOTAL_COST);
-        String userName = rs.getString(USERNAME);
-        UUID userId = UUID.fromString(rs.getString(USER_ID));
-        List<Document> expenseSplitList = mongoRepo.getExpense(eid);
-        if (expenseSplitList.size() > 0) {
-          Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitList.getFirst());
-
-          User owner = new User(ownerUserName, ownerId);
-          User user = new User(userName, userId);
-          exp.setExpenseOwner(owner);
-          exp.setEid(eid);
-          exp.setTotalCost(totalCost);
-          exp.setExpenseOwnerID(ownerId);
-          exp.setExpenseName(expenseName);
-          exp.setExpenseSplit(expenseSplit);
-          userList.add(user);
-        }
-        System.out.println("Sanity check: " + exp.toString());
-      } else {
-        System.out.println("checking if it got here too");
-        String userName = rs.getString(USERNAME);
-        UUID userId = UUID.fromString(rs.getString(USER_ID));
-        User user = new User(userName, userId);
-        userList.add(user);
+        exp = exp.creatExpense(rs);
+      } 
+      
+      // subsequent will be using this loop
+      if (!eidTracker.equals(eid)) {
+        eidTracker = eid;
         exp.setUsersInvolved(userList);
-        if (exp.getExpenseName() != null){
-          expenseList.add(exp);
-        }
-        
+        expenseList.add(exp);
+
         // reset
+        exp = exp.creatExpense(rs);
         userList = new LinkedList<>();
-        exp = new Expense();
+      }
+      User user = new User(rs.getString(USERNAME), UUID.fromString(rs.getString(USER_ID)));
+      userList.add(user);
+
+      if (rs.isLast()){
+        exp.creatExpense(rs);
+        expenseList.add(exp);
+        exp.setUsersInvolved(userList);
       }
     }
 
     return expenseList;
   } 
+
 }

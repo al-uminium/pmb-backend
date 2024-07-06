@@ -2,6 +2,9 @@ package ppm.backend.Controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
 import ppm.backend.Service.DataService;
@@ -27,31 +30,37 @@ public class PostController {
   @Autowired
   private DataService dataSvc;
 
-  @PostMapping(value = "/initializeexpenditure", consumes = MediaType.APPLICATION_JSON_VALUE)
+  private ObjectMapper mapper = new ObjectMapper();
+
+  @PostMapping(value = "/initializeexpenditure")
   public ResponseEntity<String> createExpenditure(@RequestBody Expenditure expenditure) {
+    System.out.println(expenditure.toString());
     try {
       System.out.println(expenditure);
       dataSvc.initializeNewExpenditure(expenditure.getExpenditureName(),
           expenditure.getDefaultCurrency(),
           expenditure.getUsers(),
           expenditure.getInviteToken());
-      return ResponseEntity.ok("Expenditure created");
+      return ResponseEntity.ok(mapper.writeValueAsString("Expenditure created"));
     } catch (SQLException e) {
       e.printStackTrace();
       ResponseEntity.badRequest().body("Failed to create expenditure");
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      System.out.println("Error parsing JSON");
     }
     return null;
 
   }
   
   @PostMapping("/expense/{path}")
-  public ResponseEntity<String> createExpense(@RequestBody Expense expense, @PathVariable String path) {
-      UUID exid = dataSvc.getExpenditureFromPath(path);
-      System.out.println(expense.getExpenseOwnerID());
-      UUID eid = UUID.randomUUID();
-      dataSvc.createExpenseInDB(eid, expense.getExpenseOwnerID(), exid, expense.getExpenseName(), expense.getTotalCost());
-      dataSvc.createExpenseInMongo(expense.getExpenseSplit(), eid, exid);
-      return ResponseEntity.ok(expense.toString());
+  public ResponseEntity<String> createExpense(@RequestBody Expense expense, @PathVariable String path) throws JsonProcessingException {
+    System.out.println(">>> Printing expense received... "+ expense.toString());
+    UUID exid = dataSvc.getExpenditureFromPath(path);
+    UUID eid = UUID.randomUUID();
+    dataSvc.createExpenseInDB(eid, expense.getExpenseOwner().getUserId(), exid, expense.getExpenseName(), expense.getTotalCost(), expense.getUsersInvolved());
+    dataSvc.createExpenseInMongo(expense.getExpenseSplit(), eid, exid);
+    return ResponseEntity.ok(mapper.writeValueAsString("Expenditure created"));
   }
   
 }

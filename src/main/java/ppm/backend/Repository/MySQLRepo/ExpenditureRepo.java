@@ -22,6 +22,10 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     jdbcTemplate.update(INSERT_INTO_EXPENSES, eid.toString(), uid.toString(), exid.toString(), totalCost, eName);
   }
 
+  public void insertToExpenseUsers(UUID eid, UUID uid) {
+    jdbcTemplate.update(INSERT_INTO_EXPENSE_USERS, eid.toString(), uid.toString());
+  }
+
   public void insertToUser(UUID uid, String username) {
     jdbcTemplate.update(INSERT_INTO_USER, uid.toString(), username);
   }

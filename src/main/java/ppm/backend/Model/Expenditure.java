@@ -11,10 +11,10 @@ public class Expenditure {
   UUID exid;
   String defaultCurrency;
   String expenditureName;
-  List<String> users; // used for when creating a new expenditure
+  List<User> users;
   String inviteToken;
   List<Expense> expenses;
-  List<User> expenditureUsers; // used for when getting expenditure details
+  // List<User> expenditureUsers; // used for when getting expenditure details
   Instant createdDate;
   Instant updatedDate;
 }

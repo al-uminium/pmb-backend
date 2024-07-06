@@ -37,12 +37,12 @@ public class UtilService {
   public Expense convertJsonToExpense(JsonNode expenseJson) {
     Expense expense = new Expense(); 
     String expenseName = expenseJson.get("expenseName").asText();
-    UUID expenseOwnerId = UUID.fromString(expenseJson.get("expenseOwnerId").toString().replaceAll("\"", ""));
+    // UUID expenseOwnerId = UUID.fromString(expenseJson.get("expenseOwnerId").toString().replaceAll("\"", ""));
     UUID exid = UUID.fromString(expenseJson.get("exid").toString().replaceAll("\"", ""));
     Double totalCost = expenseJson.get("totalCost").asDouble();
 
     expense.setExpenseName(expenseName);
-    expense.setExpenseOwnerID(expenseOwnerId);
+    // expense.setExpenseOwnerID(expenseOwnerId);
     expense.setExid(exid);
     expense.setTotalCost(totalCost);
     return expense;
