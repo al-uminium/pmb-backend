@@ -14,7 +14,6 @@ public class Expenditure {
   List<User> users;
   String inviteToken;
   List<Expense> expenses;
-  // List<User> expenditureUsers; // used for when getting expenditure details
   Instant createdDate;
   Instant updatedDate;
 }

@@ -13,6 +13,7 @@ import ppm.backend.Model.User;
 import ppm.backend.Service.DataService;
 import ppm.backend.Service.UtilService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -53,10 +54,18 @@ public class GetController {
   @GetMapping("/settlepayments/{path}&{uid}")
   public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
     List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
+    Map<String, Map<String,Double>> test = new HashMap<>();
+
+    for (User user : userList) {
+      Map<String, Double> calc = utilSvc.calcSummaryForUser(userList, user.getUserId());
+      test.put(user.getUserName(), calc);
+    }
+
+    System.out.println(test.toString());
 
     Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
     try {
-      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(calculatedCreditAndDebt);
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(test);
       return jsonString;
     } catch (JsonProcessingException e) {
       e.printStackTrace();

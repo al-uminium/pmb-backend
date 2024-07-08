@@ -102,21 +102,34 @@ public class UtilService {
     for (User user : userList) {
       if (user.getUserId().equals(uid)) {
         targetUser = user;
-        System.out.println("Found target user: " + targetUser.toString());
+        System.out.println(">>>>>> Found target user: " + targetUser.toString());
       } else {
         otherUsers.add(user);
       }
     }
 
+    // ensure target user does not have null map
+    if (targetUser.getAccumulatedCredit().isEmpty()) {
+      Map<String, Double> map = new HashMap<>();
+      for (User user : otherUsers) {
+        map.put(user.getUserName(), 0.0);
+      }
+      targetUser.setAccumulatedCredit(map);
+      System.out.println(">>> Setting new map for... " + targetUser.getUserName());
+      System.out.println(map.toString());
+    }
+
+
     System.out.println("Sanity check... " + otherUsers.toString());
 
     for (User user : otherUsers) {
       Map<String, Double> accCost = user.getAccumulatedCredit();
+
+      System.out.println(">>> Currently in " + user.getUserName());
       if (accCost.isEmpty()) {
         System.out.println("It's empty");
         costMap.put(user.getUserName(), targetUser.getAccumulatedCredit().get(user.getUserName()));
       }
-      System.out.println("Currently in " + user.getUserName());
       for (Map.Entry<String, Double> userDebt : accCost.entrySet()) {
         System.out.println("Going thru " + user.getUserName() + "'s accumulated credit...");
         if (userDebt.getKey().equals(targetUser.getUserName())) {
