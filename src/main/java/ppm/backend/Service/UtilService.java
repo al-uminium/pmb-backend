@@ -72,38 +72,61 @@ public class UtilService {
     return res;
   }
 
+  public Map<String, Double> calcSettlements() {
+    Map<String, Double> settlements = new HashMap<>();
+
+    /* 
+     get list of users
+     for each user, get the expenses they paid. 
+     
+     for the target user:
+      get debt of each other user to target
+      put in map
+    
+     for other users:
+      get debt of target user to other user
+      retrieve value of other user in map
+      calculate sum
+    
+     return
+    */
+
+    return settlements;
+  }
+
   public Map<String, Double> calcSummaryForUser(List<User> userList, UUID uid) {
     Map<String, Double> costMap = new HashMap<>();
     User targetUser = new User();
     List<User> otherUsers = new ArrayList<>();
 
     for (User user : userList) {
-      if (user.getUserId().equals(uid)) {
-        targetUser = user;
-        System.out.println("Found target user: " + targetUser.toString());
-      } else {
-        otherUsers.add(user);
-      }
+      System.out.println(user.toString());
+      // if (user.getUserId().equals(uid)) {
+      //   targetUser = user;
+      //   System.out.println("Found target user: " + targetUser.toString());
+      // } else {
+      //   otherUsers.add(user);
+      // }
     }
 
-    System.out.println("Sanity check... " + otherUsers.toString());
+    // System.out.println("Sanity check... " + otherUsers.toString());
 
-    for (User user : otherUsers) {
-      Map<String, Double> accCost = user.getAccumulatedCredit();
-      System.out.println("Currently in " + user.getUserName());
-      for (Map.Entry<String, Double> userDebt : accCost.entrySet()) {
-        System.out.println("Going thru " + user.getUserName() + "'s accumulated credit...");
-        if (userDebt.getKey().equals(targetUser.getUserName())) {
-          System.out.println(targetUser.getUserName() + " owes " + user.getUserName() + " " +  userDebt.getValue());
-          Double debt = userDebt.getValue();
-          Double credit = targetUser.getAccumulatedCredit().get(user.getUserName());
-          System.out.println("Sanity check... ");
-          System.out.println(targetUser.getUserName() + ": " + credit);
-          System.out.println(user.getUserName() + ": -" + debt);
-          costMap.put(user.getUserName(), credit - debt);
-        }
-      }
-    }
+    // for (User user : otherUsers) {
+    //   Map<String, Double> accCost = user.getAccumulatedCredit();
+    //   System.out.println("Currently in " + user.getUserName());
+    //   for (Map.Entry<String, Double> userDebt : accCost.entrySet()) {
+    //     System.out.println("Going thru " + user.getUserName() + "'s accumulated credit...");
+    //     if (userDebt.getKey().equals(targetUser.getUserName())) {
+    //       System.out.println(targetUser.getUserName() + " owes " + user.getUserName() + " " +  userDebt.getValue());
+    //       Double debt = userDebt.getValue();
+    //       Double credit = targetUser.getAccumulatedCredit().get(user.getUserName());
+    //       System.out.println("Sanity check... ");
+    //       System.out.println(targetUser.getUserName() + ": " + credit);
+    //       System.out.println(user.getUserName() + ": -" + debt);
+    //       costMap.put(user.getUserName(), credit - debt);
+    //     }
+    //   }
+    // }
 
     return costMap;
   }
@@ -123,4 +146,6 @@ public class UtilService {
     Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
     return instant;
   }
+
+
 }

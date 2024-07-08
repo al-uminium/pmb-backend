@@ -145,19 +145,19 @@ public class DataService implements SQLColumns{
     return expenseList;
   }
 
-  // public List<User> getExpenseSummaryOfAllUsers(String path) {
-  //   List<User> userList = getUsersForExpenditure(path);
+  public List<User> getExpenseSummaryOfAllUsers(String path) {
+    List<User> userList = getUsersForExpenditure(path);
     
-  //   for (User user : userList) {
-  //     SqlRowSet rs = sqlRepo.getExpensesForUser(path, user.getUserId());
-  //     List<Expense> expenseList = convertRowSetToExpenseList(rs);
-  //     Double accTotalCost = utilSvc.calcAccumulatedTotalCost(expenseList);
-  //     Map<String, Double> accumulatedCredit = utilSvc.calcCostIncurredPerUser(expenseList);
-  //     user.setAccumulatedCredit(accumulatedCredit);
-  //     user.setAccumulatedTotalCost(accTotalCost);
-  //   }
-  //   return userList;
-  // }
+    for (User user : userList) {
+      SqlRowSet rs = sqlRepo.getExpensesForOwner(path, user.getUserId());
+      List<Expense> expenseList = convertRowSetToExpenseList(rs);
+      Double accTotalCost = utilSvc.calcAccumulatedTotalCost(expenseList);
+      Map<String, Double> accumulatedCredit = utilSvc.calcCostIncurredPerUser(expenseList);
+      user.setAccumulatedCredit(accumulatedCredit);
+      user.setAccumulatedTotalCost(accTotalCost);
+    }
+    return userList;
+  }
 
   public List<Expense> getExpensesWhereUserOwes(String path, UUID uid) {
     SqlRowSet rs = sqlRepo.getExpensesWhereUserOwes(path, uid);
@@ -183,14 +183,13 @@ public class DataService implements SQLColumns{
   // Not putting it under Expense bc there's a mongo call inside ):
   public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {
     List<Expense> expenseList = new LinkedList<>();
+    List<User> userList = new LinkedList<>();
     UUID eidTracker = null;
     Expense exp = new Expense();
-    List<User> userList = new LinkedList<>();
 
     while (rs.next()) {
       UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
-      List<Document> expenseSplitDoc = mongoRepo.getExpense(eid);
-      Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitDoc.getFirst());
+      
       
       // first if is to initialize
       if (eidTracker == null) {
@@ -200,21 +199,25 @@ public class DataService implements SQLColumns{
       
       // subsequent will be using this loop
       if (!eidTracker.equals(eid)) {
+        List<Document> expenseSplitDoc = mongoRepo.getExpense(eidTracker);
+        Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitDoc.getFirst());
         eidTracker = eid;
         exp.setUsersInvolved(userList);
         exp.setExpenseSplit(expenseSplit);
         expenseList.add(exp);
 
         // reset
-        exp = exp.creatExpense(rs);
+        exp = new Expense();
         userList = new LinkedList<>();
       }
       User user = new User(rs.getString(USERNAME), UUID.fromString(rs.getString(USER_ID)));
       userList.add(user);
 
       if (rs.isLast()){
-        exp.creatExpense(rs);
+        exp = exp.creatExpense(rs);
         expenseList.add(exp);
+        List<Document> expenseSplitDoc = mongoRepo.getExpense(eidTracker);
+        Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitDoc.getFirst());
         exp.setExpenseSplit(expenseSplit);
         exp.setUsersInvolved(userList);
       }

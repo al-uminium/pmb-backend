@@ -50,19 +50,19 @@ public class GetController {
     }
   }
   
-  // @GetMapping("/expenditure/summary/{path}&{uid}")
-  // public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
-  //   List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
+  @GetMapping("/settlepayments/{path}&{uid}")
+  public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
+    List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
 
-  //   Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
-  //   try {
-  //     String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(calculatedCreditAndDebt);
-  //     return jsonString;
-  //   } catch (JsonProcessingException e) {
-  //     e.printStackTrace();
-  //     return "aaaa";
-  //   }
-  // }
+    Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
+    try {
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(calculatedCreditAndDebt);
+      return jsonString;
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return "aaaa";
+    }
+  }
 
   @GetMapping("/expenditure/users/{path}")
   public String getUsersForExpenditure(@PathVariable String path) {

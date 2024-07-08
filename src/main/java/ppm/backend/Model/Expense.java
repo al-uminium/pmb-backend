@@ -17,6 +17,7 @@ public class Expense implements SQLColumns {
   Double totalCost;
   Map<String, Double> expenseSplit;
   List<User> usersInvolved;
+  List<User> usersPaid;
   UUID exid;
   UUID eid;
 
@@ -31,6 +32,8 @@ public class Expense implements SQLColumns {
   public Expense creatExpense(SqlRowSet rs) {
     Expense exp = new Expense();
     UUID ownerId = UUID.fromString(rs.getString(EXPENSE_OWNER_ID));
+    UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
+    UUID exid = UUID.fromString(rs.getString(EXPENDITURE_ID));
     String ownerUserName = rs.getString(EXPENSE_OWNER_USERNAME);
     String expenseName = rs.getString(EXPENSE_NAME);
     Double totalCost = rs.getDouble(TOTAL_COST);
@@ -38,6 +41,7 @@ public class Expense implements SQLColumns {
     User owner = new User(ownerUserName, ownerId);
     exp.setExpenseOwner(owner);
     exp.setEid(eid);
+    exp.setExid(exid);
     exp.setTotalCost(totalCost);
     exp.setExpenseName(expenseName);
     exp.setExpenseSplit(expenseSplit);
