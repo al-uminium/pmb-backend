@@ -149,10 +149,13 @@ public class DataService implements SQLColumns{
     List<User> userList = getUsersForExpenditure(path);
     
     for (User user : userList) {
+      System.out.println("Adding current user: " + user.getUserName());
       SqlRowSet rs = sqlRepo.getExpensesForOwner(path, user.getUserId());
       List<Expense> expenseList = convertRowSetToExpenseList(rs);
       Double accTotalCost = utilSvc.calcAccumulatedTotalCost(expenseList);
+      System.out.println("Current accTotalCost: " + accTotalCost);
       Map<String, Double> accumulatedCredit = utilSvc.calcCostIncurredPerUser(expenseList);
+      System.out.println("Current accumulatedCredit: " + accumulatedCredit.toString());
       user.setAccumulatedCredit(accumulatedCredit);
       user.setAccumulatedTotalCost(accTotalCost);
     }
@@ -197,7 +200,7 @@ public class DataService implements SQLColumns{
         exp = exp.creatExpense(rs);
       } 
       
-      // subsequent will be using this loop
+      // if change expense changed, add users and expense split to exp before reset
       if (!eidTracker.equals(eid)) {
         List<Document> expenseSplitDoc = mongoRepo.getExpense(eidTracker);
         Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitDoc.getFirst());
@@ -206,8 +209,9 @@ public class DataService implements SQLColumns{
         exp.setExpenseSplit(expenseSplit);
         expenseList.add(exp);
 
-        // reset
-        exp = new Expense();
+        // change to new expense
+        exp = exp.creatExpense(rs);
+        // reset userlist
         userList = new LinkedList<>();
       }
       User user = new User(rs.getString(USERNAME), UUID.fromString(rs.getString(USER_ID)));
