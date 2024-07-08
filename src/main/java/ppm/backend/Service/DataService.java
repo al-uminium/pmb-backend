@@ -139,18 +139,30 @@ public class DataService implements SQLColumns{
     return expenseList;
   }
 
-  public List<User> getExpenseSummaryOfAllUsers(String path) {
-    List<User> userList = getUsersForExpenditure(path);
+  public List<Expense> getExpensesForOwner(String path, UUID ownerId) {
+    SqlRowSet rs = sqlRepo.getExpensesForOwner(path, ownerId);
+    List<Expense> expenseList = convertRowSetToExpenseList(rs);
+    return expenseList;
+  }
+
+  // public List<User> getExpenseSummaryOfAllUsers(String path) {
+  //   List<User> userList = getUsersForExpenditure(path);
     
-    for (User user : userList) {
-      SqlRowSet rs = sqlRepo.getExpensesForUser(path, user.getUserId());
-      List<Expense> expenseList = convertRowSetToExpenseList(rs);
-      Double accTotalCost = utilSvc.calcAccumulatedTotalCost(expenseList);
-      Map<String, Double> accumulatedCredit = utilSvc.calcCostIncurredPerUser(expenseList);
-      user.setAccumulatedCredit(accumulatedCredit);
-      user.setAccumulatedTotalCost(accTotalCost);
-    }
-    return userList;
+  //   for (User user : userList) {
+  //     SqlRowSet rs = sqlRepo.getExpensesForUser(path, user.getUserId());
+  //     List<Expense> expenseList = convertRowSetToExpenseList(rs);
+  //     Double accTotalCost = utilSvc.calcAccumulatedTotalCost(expenseList);
+  //     Map<String, Double> accumulatedCredit = utilSvc.calcCostIncurredPerUser(expenseList);
+  //     user.setAccumulatedCredit(accumulatedCredit);
+  //     user.setAccumulatedTotalCost(accTotalCost);
+  //   }
+  //   return userList;
+  // }
+
+  public List<Expense> getExpensesWhereUserOwes(String path, UUID uid) {
+    SqlRowSet rs = sqlRepo.getExpensesWhereUserOwes(path, uid);
+    List<Expense> expenseList = convertRowSetToExpenseList(rs);
+    return expenseList;
   }
 
   public List<User> getUsersForExpenditure(String path) {
@@ -177,6 +189,8 @@ public class DataService implements SQLColumns{
 
     while (rs.next()) {
       UUID eid = UUID.fromString(rs.getString(EXPENSE_ID));
+      List<Document> expenseSplitDoc = mongoRepo.getExpense(eid);
+      Map<String, Double> expenseSplit = utilSvc.convertDocumentToMap(expenseSplitDoc.getFirst());
       
       // first if is to initialize
       if (eidTracker == null) {
@@ -188,6 +202,7 @@ public class DataService implements SQLColumns{
       if (!eidTracker.equals(eid)) {
         eidTracker = eid;
         exp.setUsersInvolved(userList);
+        exp.setExpenseSplit(expenseSplit);
         expenseList.add(exp);
 
         // reset
@@ -200,6 +215,7 @@ public class DataService implements SQLColumns{
       if (rs.isLast()){
         exp.creatExpense(rs);
         expenseList.add(exp);
+        exp.setExpenseSplit(expenseSplit);
         exp.setUsersInvolved(userList);
       }
     }

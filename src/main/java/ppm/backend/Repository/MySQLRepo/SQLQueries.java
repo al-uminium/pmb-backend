@@ -70,13 +70,47 @@ public interface SQLQueries {
     ORDER BY e.created_at;
   """;
 
-  public static final String GET_EXPENSES_FOR_EXPENDITURE_FOR_USER = 
+  public static final String GET_EXPENSES_FOR_EXPENDITURE_FOR_OWNER = 
     """
-      SELECT e.expense_id, e.expense_name, e.owner_id, e.total_cost
+      SELECT
+        e.expense_id, 
+        e.expenditure_id, 
+        e.expense_name, 
+        e.total_cost,
+        e.owner_id,
+        u_owner.username AS owner_username,
+        eu.user_id,
+        u_user.username AS username
       FROM Expense e
       JOIN Invites i ON e.expenditure_id = i.expenditure_id
-      WHERE i.invite_token = ? AND e.owner_id = ?;
+      JOIN Expense_Users eu ON e.expense_id = eu.expense_id
+      JOIN User u_owner ON e.owner_id = u_owner.user_id
+      JOIN User u_user ON eu.user_id = u_user.user_id
+      WHERE i.invite_token = ? AND e.owner_id = ?
+      ORDER BY e.created_at;
     """;
+  
+  public static final String GET_EXPENSES_WHERE_USER_OWES = 
+  """
+    SELECT
+      e.expense_id, 
+      e.expenditure_id, 
+      e.expense_name, 
+      e.total_cost,
+      e.owner_id,
+      u_owner.username AS owner_username,
+      eu.user_id,
+      u_user.username AS username
+    FROM Expense e
+    JOIN Invites i ON e.expenditure_id = i.expenditure_id
+    JOIN Expense_Users eu ON e.expense_id = eu.expense_id
+    JOIN User u_owner ON e.owner_id = u_owner.user_id
+    JOIN User u_user ON eu.user_id = u_user.user_id
+    WHERE i.invite_token = ?
+    AND e.owner_id <> ?
+    AND eu.user_id = ?
+    ORDER BY e.created_at;    
+  """;
 
   public static final String GET_USERS_FOR_EXPENDITURE = 
     """

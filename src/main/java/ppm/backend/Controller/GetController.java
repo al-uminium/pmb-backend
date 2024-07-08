@@ -50,19 +50,19 @@ public class GetController {
     }
   }
   
-  @GetMapping("/expenditure/summary/{path}&{uid}")
-  public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
-    List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
+  // @GetMapping("/expenditure/summary/{path}&{uid}")
+  // public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
+  //   List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
 
-    Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
-    try {
-      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(calculatedCreditAndDebt);
-      return jsonString;
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-      return "aaaa";
-    }
-  }
+  //   Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
+  //   try {
+  //     String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(calculatedCreditAndDebt);
+  //     return jsonString;
+  //   } catch (JsonProcessingException e) {
+  //     e.printStackTrace();
+  //     return "aaaa";
+  //   }
+  // }
 
   @GetMapping("/expenditure/users/{path}")
   public String getUsersForExpenditure(@PathVariable String path) {
@@ -78,7 +78,7 @@ public class GetController {
   }
   
   @GetMapping("/expenditure/{path}")
-  public String getMethodName(@PathVariable String path) {
+  public String getExpenditure(@PathVariable String path) {
     Expenditure expenditure = dataSvc.getExpenditureDetails(path);
 
     try {
@@ -89,5 +89,31 @@ public class GetController {
       return "Unable to get expenditure";
     }
   }
+
+  @GetMapping("/expenditure/expenses/user/{uid}&{path}")
+  public String getExpensesForOwner(@PathVariable String uid, @PathVariable String path) {
+    List<Expense> expenses = dataSvc.getExpensesForOwner(path, UUID.fromString(uid));
+    try {
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expenses);
+      return jsonString;
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return "Unable to get expenses";
+    }
+  }
+
+  @GetMapping("/expenditure/expenses/user/{uid}&{path}&owes")
+  public String getMethodName(@PathVariable String path, @PathVariable String uid) {
+    List<Expense> expenses = dataSvc.getExpensesWhereUserOwes(path, UUID.fromString(uid));
+    try {
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expenses);
+      return jsonString;
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return "Unable to get expenses";
+    }
+  }
+  
+  
   
 }
