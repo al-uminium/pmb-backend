@@ -72,28 +72,6 @@ public class UtilService {
     return res;
   }
 
-  public Map<String, Double> calcSettlements() {
-    Map<String, Double> settlements = new HashMap<>();
-
-    /* 
-     get list of users
-     for each user, get the expenses they paid. 
-     
-     for the target user:
-      get debt of each other user to target
-      put in map
-    
-     for other users:
-      get debt of target user to other user
-      retrieve value of other user in map
-      calculate sum
-    
-     return
-    */
-
-    return settlements;
-  }
-
   public Map<String, Double> calcSummaryForUser(List<User> userList, UUID uid) {
     Map<String, Double> costMap = new HashMap<>();
     User targetUser = new User();

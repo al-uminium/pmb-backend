@@ -46,13 +46,13 @@ public class DataService implements SQLColumns{
     return exid;
   }
 
-  public JsonNode createUser(String username) {
-    UUID uid = UUID.randomUUID();
-    sqlRepo.insertToUser(uid, username);
-    Map<String, UUID> insertedUser = new HashMap<>();
-    insertedUser.put(username, uid);
-    return mapper.valueToTree(insertedUser);
-  }
+  // public JsonNode createUser(String username) {
+  //   UUID uid = UUID.randomUUID();
+  //   sqlRepo.insertToUser(uid, username);
+  //   Map<String, UUID> insertedUser = new HashMap<>();
+  //   insertedUser.put(username, uid);
+  //   return mapper.valueToTree(insertedUser);
+  // }
 
   public JsonNode createUsers(List<User> users) {
     Map<String, UUID> insertedUsers = new HashMap<>();
@@ -63,7 +63,6 @@ public class DataService implements SQLColumns{
     }
     System.out.println(insertedUsers.toString());
     return mapper.valueToTree(insertedUsers);
-
   }
 
   public void insertUserToExpenditure(UUID uid, UUID eid){
@@ -79,13 +78,20 @@ public class DataService implements SQLColumns{
   }
 
   @Transactional(rollbackFor = SQLException.class)
-  public void createExpenseInDB(UUID eid, UUID uid, UUID exid, String eName, Double totalCost, List<User> usersInvolved) {
-    sqlRepo.insertToExpenses(eid, uid, exid, eName, totalCost);
+  public void createExpenseInDB(Expense expense) {
+    sqlRepo.insertToExpenses(expense.getEid(), expense.getExpenseOwner().getUserId(), expense.getExid(), expense.getExpenseName(), expense.getTotalCost());
 
-    for (User user : usersInvolved) {
-      System.out.println("Sanity check... " + eid);
-      sqlRepo.insertToExpenseUsers(eid, user.getUserId());
+    Double totalOwed = 0.0;
+    for (User user : expense.getUsersInvolved()) {
+      if (!user.getUserId().equals(expense.getExpenseOwner().getUserId())) {
+      Double balance = expense.getExpenseSplit().get(user.getUserName());
+      totalOwed += balance;
+      sqlRepo.insertToExpenseUsers(expense.getEid(), user.getUserId());
+        sqlRepo.updateBalance(-balance, user.getUserId());
+      }
     }
+    sqlRepo.insertToExpenseUsers(expense.getEid(), expense.getExpenseOwner().getUserId());
+    sqlRepo.updateBalance(totalOwed, expense.getExpenseOwner().getUserId());
     // return eid;
   }
 
@@ -173,15 +179,27 @@ public class DataService implements SQLColumns{
     SqlRowSet rs = sqlRepo.getUsersOfExpenditure(path);
 
     while(rs.next()) {
-      UUID uid = UUID.fromString(rs.getString(USER_ID));
-      String userName = rs.getString(USERNAME);
-      User user = new User(userName, uid);
+      // UUID uid = UUID.fromString(rs.getString(USER_ID));
+      // String userName = rs.getString(USERNAME);
+      // Double balance = rs.getDouble(BALANCE);
+      User user = new User(rs);
       usersList.add(user);
     }
 
     return usersList;
   }
 
+  // public List<User> getBalanceForExpenditure(String path){
+  //   List<User> users = new LinkedList<>();
+  //   SqlRowSet rs = sqlRepo.getBalanceForExpenditure(path);
+  //   System.out.println(path);
+  //   while (rs.next()) {
+  //     User user = new User(rs);
+  //     users.add(user);
+  //   }
+
+  //   return users;
+  // }
 
   // Not putting it under Expense bc there's a mongo call inside ):
   public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {

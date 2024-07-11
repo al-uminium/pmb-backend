@@ -17,17 +17,8 @@ public class Expense implements SQLColumns {
   Double totalCost;
   Map<String, Double> expenseSplit;
   List<User> usersInvolved;
-  List<User> usersPaid;
   UUID exid;
   UUID eid;
-
-  // public void setExpenseOwnerID(String expenseOwnerID) {
-  //   this.expenseOwnerID = UUID.fromString(expenseOwnerID);
-  // }
-
-  // public void setExpenseOwnerID(UUID expenseOwnerID) {
-  //   this.expenseOwnerID = expenseOwnerID;
-  // }
 
   public Expense creatExpense(SqlRowSet rs) {
     Expense exp = new Expense();

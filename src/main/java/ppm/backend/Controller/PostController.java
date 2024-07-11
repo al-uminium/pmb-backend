@@ -58,9 +58,24 @@ public class PostController {
     System.out.println(">>> Printing expense received... "+ expense.toString());
     UUID exid = dataSvc.getExpenditureFromPath(path);
     UUID eid = UUID.randomUUID();
-    dataSvc.createExpenseInDB(eid, expense.getExpenseOwner().getUserId(), exid, expense.getExpenseName(), expense.getTotalCost(), expense.getUsersInvolved());
+    expense.setEid(eid);
+    expense.setExid(exid);
+    dataSvc.createExpenseInDB(expense);
     dataSvc.createExpenseInMongo(expense.getExpenseSplit(), eid, exid);
-    return ResponseEntity.ok(mapper.writeValueAsString("Expenditure created"));
+    return ResponseEntity.ok(mapper.writeValueAsString("Expense created"));
   }
   
 }
+
+// Printing expense received... 
+// Expense(expenseName=Repayment, expenseOwner=User(userName=Alan, userId=0170ace8-764b-4fec-a389-4542c6025711, balance=-56.67, accumulatedTotalCost=null, accumulatedCredit=null), 
+// totalCost=1.5, expenseSplit={Alan=1.5, Forrest=0.0}, 
+// usersInvolved=[User(userName=Alan, userId=0170ace8-764b-4fec-a389-4542c6025711, balance=-56.67, accumulatedTotalCost=null, accumulatedCredit=null), 
+// User(userName=Forrest, userId=bedea353-4484-4480-86b5-ab558bb9b057, balance=-71.67, accumulatedTotalCost=null, accumulatedCredit=null)], exid=null, eid=null)
+
+
+// >>> Printing expense received... 
+// Expense(expenseName=Testing, expenseOwner=User(userName=Forrest, userId=bedea353-4484-4480-86b5-ab558bb9b057, balance=null, accumulatedTotalCost=null, accumulatedCredit=null), 
+// totalCost=10.5, expenseSplit={Alan=3.5, Dwayne=3.5, Forrest=3.5}, 
+// usersInvolved=[User(userName=Alan, userId=0170ace8-764b-4fec-a389-4542c6025711, balance=null, accumulatedTotalCost=null, accumulatedCredit=null), 
+// User(userName=Dwayne, userId=a269b322-cab6-45b4-ab1d-418dd4c1afe4, balance=null, accumulatedTotalCost=null, accumulatedCredit=null)], exid=null, eid=null)

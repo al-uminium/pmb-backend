@@ -31,6 +31,7 @@ CREATE TABLE Expense (
   expense_name VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  is_repayment BOOLEAN DEFAULT 0,
   FOREIGN KEY (owner_id) REFERENCES User (user_id),
   FOREIGN KEY (expenditure_id) REFERENCES Expenditures (expenditure_id),
   PRIMARY KEY (expense_id)
@@ -47,6 +48,7 @@ CREATE TABLE Expense_Users (
 create table Expenditure_User (
   expenditure_id CHAR(36), 
   user_id CHAR(36), 
+  balance DECIMAL(10,2) DEFAULT 0.00,
   PRIMARY KEY (expenditure_id, user_id),
   FOREIGN KEY (expenditure_id) REFERENCES Expenditures (expenditure_id),
   FOREIGN KEY (user_id) REFERENCES User (user_id)

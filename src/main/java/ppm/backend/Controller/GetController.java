@@ -51,19 +51,17 @@ public class GetController {
     }
   }
   
-  @GetMapping("/settlepayments/{path}&{uid}")
-  public String getCostSummaryForExpenditure(@PathVariable String path, @PathVariable String uid) {
+  @GetMapping("/expenditure/{path}/balance/settlements")
+  public String getCostSummaryForExpenditure(@PathVariable String path) {
     List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
     Map<String, Map<String,Double>> test = new HashMap<>();
 
     for (User user : userList) {
-      Map<String, Double> calc = utilSvc.calcSummaryForUser(userList, user.getUserId());
-      test.put(user.getUserName(), calc);
+      Map<String, Double> abc = utilSvc.calcSummaryForUser(userList, user.getUserId());
+      test.put(user.getUserName(), abc);
     }
 
-    System.out.println(test.toString());
-
-    Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
+    // Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
     try {
       String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(test);
       return jsonString;
@@ -112,7 +110,7 @@ public class GetController {
   }
 
   @GetMapping("/expenditure/expenses/user/{uid}&{path}&owes")
-  public String getMethodName(@PathVariable String path, @PathVariable String uid) {
+  public String getExpensesWhereUserOwes(@PathVariable String path, @PathVariable String uid) {
     List<Expense> expenses = dataSvc.getExpensesWhereUserOwes(path, UUID.fromString(uid));
     try {
       String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expenses);
@@ -122,6 +120,19 @@ public class GetController {
       return "Unable to get expenses";
     }
   }
+  
+  // @GetMapping("/expenditure/{path}/balance")
+  // public String getBalanceForExpenditure(@PathVariable String path) {
+  //   List<User> users = dataSvc.getBalanceForExpenditure(path);
+  //   try {
+  //     String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(users);
+  //     System.out.println(jsonString);
+  //     return jsonString;
+  //   } catch (JsonProcessingException e) {
+  //     e.printStackTrace();
+  //     return "Unable to get expenses";
+  //   }
+  // }
   
   
   

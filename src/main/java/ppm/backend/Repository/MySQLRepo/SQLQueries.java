@@ -36,19 +36,17 @@ public interface SQLQueries {
       insert into Invites (expenditure_id, invite_token) VALUES (?, ?)
     """;
 
+  // FOR UPDATE QUERIES
+  public static final String UPDATE_BALANCE =
+    """
+      UPDATE Expenditure_User SET balance = balance + ? where user_id = ? 
+    """;
+
   // FOR GET QUERIES
   public static final String GET_EXPENDITURE_ID_FROM_PATH = 
     """
       SELECT expenditure_id FROM Invites WHERE invite_token = ?;
     """;
-    
-  // public static final String GET_EXPENSES_FOR_EXPENDITURE = 
-  //   """
-  //     SELECT e.expense_id, e.expense_name, e.owner_id, e.total_cost
-  //     FROM Expense e
-  //     JOIN Invites i ON e.expenditure_id = i.expenditure_id
-  //     WHERE i.invite_token = ?;
-  //   """;
 
   public static final String GET_EXPENSES_FOR_EXPENDITURE = 
   """
@@ -67,7 +65,7 @@ public interface SQLQueries {
     JOIN User u_owner ON e.owner_id = u_owner.user_id
     JOIN User u_user ON eu.user_id = u_user.user_id
     WHERE i.invite_token = ?
-    ORDER BY e.created_at;
+    ORDER BY e.created_at DESC;
   """;
 
   public static final String GET_EXPENSES_FOR_EXPENDITURE_FOR_OWNER = 
@@ -87,7 +85,7 @@ public interface SQLQueries {
       JOIN User u_owner ON e.owner_id = u_owner.user_id
       JOIN User u_user ON eu.user_id = u_user.user_id
       WHERE i.invite_token = ? AND e.owner_id = ?
-      ORDER BY e.created_at;
+      ORDER BY e.created_at DESC;
     """;
   
   public static final String GET_EXPENSES_WHERE_USER_OWES = 
@@ -109,12 +107,12 @@ public interface SQLQueries {
     WHERE i.invite_token = ?
     AND e.owner_id <> ?
     AND eu.user_id = ?
-    ORDER BY e.created_at;    
+    ORDER BY e.created_at DESC; 
   """;
 
   public static final String GET_USERS_FOR_EXPENDITURE = 
     """
-      SELECT u.username, eu.user_id
+      SELECT u.username, eu.user_id, eu.balance
       FROM Expenditure_User eu
       JOIN Invites i ON eu.expenditure_id = i.expenditure_id
       JOIN User u ON u.user_id = eu.user_id
@@ -128,4 +126,13 @@ public interface SQLQueries {
     JOIN Invites i on ex.expenditure_id = i.expenditure_id
     WHERE i.invite_token = ?;    
   """;
+
+  // public static final String GET_BALANCE_FOR_EXPENDITURE = 
+  // """
+  //   SELECT eu.user_id, u.username, eu.balance
+  //   FROM Expenditure_User eu
+  //   JOIN Invites i on i.expenditure_id = eu.expenditure_id
+  //   JOIN User u on u.user_id = eu.user_id
+  //   WHERE i.invite_token = ?;    
+  // """;
 }
