@@ -1,6 +1,5 @@
 package ppm.backend.Repository.MySQLRepo;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,10 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     jdbcTemplate.update(INSERT_INTO_INVITES, exid.toString(), inviteToken);
   }
 
+  public void insertToUserViaRegister(User user) {
+    jdbcTemplate.update(INSERT_INTO_USER_VIA_LOGIN, user.getUserId().toString(), user.getUserName(), user.getPw(), user.getEmail());
+  }
+
   public SqlRowSet getExpenditureFromPath(String path) {
     return jdbcTemplate.queryForRowSet(GET_EXPENDITURE_ID_FROM_PATH, path);
   }
@@ -69,6 +72,9 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     return jdbcTemplate.queryForRowSet(GET_EXPENDITURE_DETAILS, path);
   }
 
+  public SqlRowSet getAttemptLogin(User user) {
+    return jdbcTemplate.queryForRowSet(ATTEMPT_LOGIN, user.getEmail(), user.getPw());
+  }
   // public SqlRowSet getBalanceForExpenditure(String path) {
   //   return jdbcTemplate.queryForRowSet(GET_BALANCE_FOR_EXPENDITURE, path);
   // }

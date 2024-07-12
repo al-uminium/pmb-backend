@@ -5,7 +5,7 @@ public interface SQLColumns {
   public static final String USER_ID = "user_id";
   public static final String USERNAME = "username";
   public static final String EMAIL = "email";
-  public static final String HASHED_PW = "hashedpw";
+  public static final String HASH_PW = "hashpw";
   public static final String REGISTERED_AT = "registered_at";
 
   // expense

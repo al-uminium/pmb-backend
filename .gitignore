@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .$PPM*
+export_env*.sh
 
 ### STS ###
 .apt_generated

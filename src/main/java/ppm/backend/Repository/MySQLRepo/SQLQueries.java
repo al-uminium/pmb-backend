@@ -21,6 +21,11 @@ public interface SQLQueries {
       insert into Expense_Users (expense_id, user_id) VALUES (?, ?)
     """;
   
+  public static final String INSERT_INTO_USER_VIA_LOGIN = 
+    """
+      insert into User (user_id, username, hashpw, email) VALUES (?, ?, ?, ?);
+    """;
+
   public static final String INSERT_INTO_USER =
     """
       insert into User (user_id, username) VALUES (?, ?);
@@ -126,6 +131,13 @@ public interface SQLQueries {
     JOIN Invites i on ex.expenditure_id = i.expenditure_id
     WHERE i.invite_token = ?;    
   """;
+
+  public static final String ATTEMPT_LOGIN = 
+    """
+      SELECT user_id, username, email 
+        FROM User
+      WHERE email = ? AND hashpw = ?;
+    """;
 
   // public static final String GET_BALANCE_FOR_EXPENDITURE = 
   // """

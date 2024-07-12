@@ -65,6 +65,22 @@ public class DataService implements SQLColumns{
     return mapper.valueToTree(insertedUsers);
   }
 
+  public void createLoginUser(User user) {
+    UUID userId = UUID.randomUUID();
+    user.setUserId(userId);
+    sqlRepo.insertToUserViaRegister(user);
+  }
+
+  public User attemptLogin(User user) {
+    SqlRowSet rs = sqlRepo.getAttemptLogin(user);
+    if (rs.next()) {
+      User loginUser = new User(rs, true);
+      return loginUser;
+    } else {
+      return new User();
+    }
+  }
+
   public void insertUserToExpenditure(UUID uid, UUID eid){
     sqlRepo.insertToExpenditureUsers(eid, uid);
   }
@@ -182,7 +198,7 @@ public class DataService implements SQLColumns{
       // UUID uid = UUID.fromString(rs.getString(USER_ID));
       // String userName = rs.getString(USERNAME);
       // Double balance = rs.getDouble(BALANCE);
-      User user = new User(rs);
+      User user = new User(rs, false);
       usersList.add(user);
     }
 

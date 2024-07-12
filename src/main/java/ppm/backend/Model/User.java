@@ -15,6 +15,8 @@ public class User {
   Double balance;
   Double accumulatedTotalCost;
   Map<String, Double> accumulatedCredit;
+  String pw;
+  String email;
 
   public User(){}
 
@@ -23,10 +25,13 @@ public class User {
     this.userId = userId;
   } 
 
-  public User(SqlRowSet rs) {
+  public User(SqlRowSet rs, Boolean isLogin) {
     this.userName = rs.getString(SQLColumns.USERNAME);
     this.userId = UUID.fromString(rs.getString(SQLColumns.USER_ID));
-    this.balance = rs.getDouble(SQLColumns.BALANCE);
+    this.email = rs.getString(SQLColumns.EMAIL);
+    if (!isLogin) {
+      this.balance = rs.getDouble(SQLColumns.BALANCE);
+    }
   }
 
 }

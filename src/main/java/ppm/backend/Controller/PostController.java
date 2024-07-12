@@ -7,11 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
+import ppm.backend.Model.User;
 import ppm.backend.Service.DataService;
 
 import java.sql.SQLException;
 import java.util.UUID;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -64,18 +66,21 @@ public class PostController {
     dataSvc.createExpenseInMongo(expense.getExpenseSplit(), eid, exid);
     return ResponseEntity.ok(mapper.writeValueAsString("Expense created"));
   }
+
+  @PostMapping("/register")
+  public ResponseEntity<String> createUserViaRegister(@RequestBody User user) throws JsonProcessingException {
+    dataSvc.createLoginUser(user);
+      
+    return ResponseEntity.ok(mapper.writeValueAsString("Created"));
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<String> login(@RequestBody User user) throws JsonProcessingException {
+    User loginUser = dataSvc.attemptLogin(user);
+      
+    return ResponseEntity.ok(mapper.writeValueAsString(loginUser));
+  }
+  
   
 }
 
-// Printing expense received... 
-// Expense(expenseName=Repayment, expenseOwner=User(userName=Alan, userId=0170ace8-764b-4fec-a389-4542c6025711, balance=-56.67, accumulatedTotalCost=null, accumulatedCredit=null), 
-// totalCost=1.5, expenseSplit={Alan=1.5, Forrest=0.0}, 
-// usersInvolved=[User(userName=Alan, userId=0170ace8-764b-4fec-a389-4542c6025711, balance=-56.67, accumulatedTotalCost=null, accumulatedCredit=null), 
-// User(userName=Forrest, userId=bedea353-4484-4480-86b5-ab558bb9b057, balance=-71.67, accumulatedTotalCost=null, accumulatedCredit=null)], exid=null, eid=null)
-
-
-// >>> Printing expense received... 
-// Expense(expenseName=Testing, expenseOwner=User(userName=Forrest, userId=bedea353-4484-4480-86b5-ab558bb9b057, balance=null, accumulatedTotalCost=null, accumulatedCredit=null), 
-// totalCost=10.5, expenseSplit={Alan=3.5, Dwayne=3.5, Forrest=3.5}, 
-// usersInvolved=[User(userName=Alan, userId=0170ace8-764b-4fec-a389-4542c6025711, balance=null, accumulatedTotalCost=null, accumulatedCredit=null), 
-// User(userName=Dwayne, userId=a269b322-cab6-45b4-ab1d-418dd4c1afe4, balance=null, accumulatedTotalCost=null, accumulatedCredit=null)], exid=null, eid=null)
