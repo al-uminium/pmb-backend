@@ -139,6 +139,26 @@ public interface SQLQueries {
       WHERE email = ? AND hashpw = ?;
     """;
 
+
+  public static final String UPDATE_USER_ID =
+  """
+  START TRANSACTION;
+
+    -- Replace 'old_user_id' and 'new_user_id' with actual user IDs
+    UPDATE Expenditure_User
+    SET user_id = ?
+    WHERE user_id = ?;
+
+    UPDATE Expense_Users
+    SET user_id = ?
+    WHERE user_id = ?;
+
+    UPDATE Expense
+    SET owner_id = ?
+    WHERE owner_id = ?;
+
+  COMMIT;    
+  """;
   // public static final String GET_BALANCE_FOR_EXPENDITURE = 
   // """
   //   SELECT eu.user_id, u.username, eu.balance
