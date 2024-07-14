@@ -63,7 +63,8 @@ public interface SQLQueries {
       e.owner_id,
       u_owner.username AS owner_username,
       eu.user_id,
-      u_user.username AS username
+      u_user.username AS username,
+      u_user.paypalEmail AS paypalEmail
     FROM Expense e
     JOIN Invites i ON e.expenditure_id = i.expenditure_id
     JOIN Expense_Users eu ON e.expense_id = eu.expense_id
@@ -117,7 +118,7 @@ public interface SQLQueries {
 
   public static final String GET_USERS_FOR_EXPENDITURE = 
     """
-      SELECT u.username, eu.user_id, eu.balance, u.email
+      SELECT u.username, eu.user_id, eu.balance, u.email, u.paypalEmail
       FROM Expenditure_User eu
       JOIN Invites i ON eu.expenditure_id = i.expenditure_id
       JOIN User u ON u.user_id = eu.user_id
@@ -134,7 +135,7 @@ public interface SQLQueries {
 
   public static final String ATTEMPT_LOGIN = 
     """
-      SELECT user_id, username, email 
+      SELECT * 
         FROM User
       WHERE email = ? AND hashpw = ?;
     """;
@@ -157,8 +158,16 @@ public interface SQLQueries {
 
   // for some reason when i get user info from paypal i don't have the id? 
   // adjusting the sql until i can find the fix, but it's not an issue. 
-  public static final String INSERT_INTO_PAYPALINFO =
+  public static final String UPDATE_PAYPAL_EMAIL =
   """
-    INSERT INTO PaypalInfo (user_id, paypal_email) VALUES (?, ?)    
+    UPDATE User
+    SET paypalEmail = ?
+    WHERE user_id = ?
+  """;
+
+  public static final String GET_PAYPAL_INFO_FOR_USER =
+  """
+    SELECT * FROM PaypalInfo
+    WHERE user_id = ?    
   """;
 }

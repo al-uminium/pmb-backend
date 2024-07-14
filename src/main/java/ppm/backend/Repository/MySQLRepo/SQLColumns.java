@@ -27,4 +27,7 @@ public interface SQLColumns {
   // invites
   public static final String INVITE_TOKEN = "invite_token";
   public static final String EXPIRE_AT = "expire_at";
+
+  // paypal
+  public static final String PAYPAL_EMAIL = "paypalEmail";
 }

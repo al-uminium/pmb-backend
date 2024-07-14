@@ -17,6 +17,7 @@ public class User {
   Map<String, Double> accumulatedCredit;
   String pw;
   String email;
+  String paypalEmail;
 
   public User(){}
 
@@ -31,6 +32,9 @@ public class User {
     this.email = rs.getString(SQLColumns.EMAIL);
     if (!isLogin) {
       this.balance = rs.getDouble(SQLColumns.BALANCE);
+    }
+    if (!(rs.getString(SQLColumns.PAYPAL_EMAIL) == null)) {
+      this.paypalEmail = rs.getString(SQLColumns.PAYPAL_EMAIL);
     }
   }
 

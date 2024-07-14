@@ -8,6 +8,7 @@ create table User (
   user_id CHAR(36) NOT NULL, 
   username VARCHAR(100) NOT NULL, 
   email VARCHAR(255),
+  paypalEmail VARCHAR(255),
   hashpw VARCHAR(255),
   registration_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT unique_email UNIQUE (email),

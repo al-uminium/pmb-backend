@@ -26,8 +26,8 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     jdbcTemplate.update(INSERT_INTO_EXPENSES, eid.toString(), uid.toString(), exid.toString(), totalCost, eName);
   }
 
-  public void insertToPaypalInfo (UUID uid, Userinfo userinfo) {
-    jdbcTemplate.update(INSERT_INTO_PAYPALINFO, uid.toString(), userinfo.getEmail());
+  public void updatePaypalEmail (UUID uid, Userinfo userinfo) {
+    jdbcTemplate.update(UPDATE_PAYPAL_EMAIL, userinfo.getEmail(), uid.toString());
   }
 
   public void updateBalance(Double balance, UUID uid) {
@@ -89,7 +89,8 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
   public SqlRowSet getExpenditureForUser(UUID uid) {
     return jdbcTemplate.queryForRowSet(GET_EXPENDITURES_FOR_AUTH_USER, uid.toString());
   }
-  // public SqlRowSet getBalanceForExpenditure(String path) {
-  //   return jdbcTemplate.queryForRowSet(GET_BALANCE_FOR_EXPENDITURE, path);
-  // }
+  
+  public SqlRowSet getPaypalInfoForUser(UUID uid) {
+    return jdbcTemplate.queryForRowSet(GET_PAYPAL_INFO_FOR_USER, uid.toString()); 
+  }
 }

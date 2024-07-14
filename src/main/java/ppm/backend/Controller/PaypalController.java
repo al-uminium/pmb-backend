@@ -43,8 +43,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
 @RestController
 @RequestMapping("/api/paypal")
 @CrossOrigin
@@ -61,6 +59,21 @@ public class PaypalController {
   @Autowired
   private DataService dataSvc;
 
+  // https://developer.paypal.com/docs/log-in-with-paypal/integrate/
+  // https://developer.paypal.com/docs/api/identity/v1/
+
+  // flow
+  // frontend -> user logs into paypal
+  // paypal -> returns auth code to front end
+  // frontend -> sends auth code to backend along with user for db storage
+  // backend -> receives auth code and user
+  // backend -> gen access code from auth code
+  // backend -> use access code to access open id api
+  // backend -> store user info into db for future use
+  
+
+  // LOGIN
+
   @GetMapping("link-account")
   public Map<String, String> linkAccount() {
     Map<String, String> response = new HashMap<>();
@@ -75,18 +88,6 @@ public class PaypalController {
       response.put("approvalUrl", redirectUrl);
     return response;
   }
-
-  // https://developer.paypal.com/docs/log-in-with-paypal/integrate/
-  // https://developer.paypal.com/docs/api/identity/v1/
-
-  // flow
-  // frontend -> user logs into paypal
-  // paypal -> returns auth code to front end
-  // frontend -> sends auth code to backend along with user for db storage
-  // backend -> receives auth code and user
-  // backend -> gen access code from auth code
-  // backend -> use access code to access open id api
-  // backend -> store user info into db for future use
 
   private String getAccessToken(String code) throws JsonMappingException, JsonProcessingException {
     String url = "https://api-m.sandbox.paypal.com/v1/oauth2/token";
@@ -132,9 +133,12 @@ public class PaypalController {
     return ResponseEntity.ok(userinfo.toJSON());
   }
 
-  @PostMapping("/create-order")
-  public Map<String, String> createOrder(@RequestBody Map<String,String> data) {
+  // PAYMENT
+  // using v1 because can't find resource that allows P2P payment :(
+  @PostMapping("/create-order/{path}")
+  public Map<String, String> createOrder(@RequestBody Map<String,String> data, @PathVariable String path) {
     Map<String, String> response = new HashMap<>();
+    String redirectUrl = "https://www.paymeback.wtf/expenditure/"+path+"/balance";
     APIContext apiContext = new APIContext(clientId, clientSecret, "sandbox");
     try {
       Amount amount = new Amount();
@@ -157,8 +161,8 @@ public class PaypalController {
       payment.setTransactions(Collections.singletonList(transaction));
 
       RedirectUrls redirectUrls = new RedirectUrls();
-      redirectUrls.setCancelUrl("http://localhost:4200/cancel");
-      redirectUrls.setReturnUrl("http://localhost:4200/success");
+      redirectUrls.setCancelUrl(redirectUrl);
+      redirectUrls.setReturnUrl(redirectUrl);
       payment.setRedirectUrls(redirectUrls);
 
       Payment createdPayment = payment.create(apiContext);
@@ -177,11 +181,14 @@ public class PaypalController {
   }
   
   @PostMapping("/capture-order")
+  // paymentId: abcd
+  // token: abcd
+  // payerId: abcd
   public Map<String,String> captureOrder(@RequestBody Map<String,String> data) {
     Map<String, String> response = new HashMap<>();
     APIContext apiContext = new APIContext(clientId, clientSecret, "sandbox");
     try {
-      Payment payment = Payment.get(apiContext, data.get("orderId"));
+      Payment payment = Payment.get(apiContext, data.get("paymentId"));
       PaymentExecution paymentExecution = new PaymentExecution();
       paymentExecution.setPayerId(data.get("payerId"));
       Payment executedPayment = payment.execute(apiContext, paymentExecution);
@@ -189,7 +196,7 @@ public class PaypalController {
     } catch (PayPalRESTException e) {
       e.printStackTrace();
     }
-      
+
     return response;
   }
 

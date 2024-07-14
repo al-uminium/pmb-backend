@@ -74,7 +74,7 @@ public class DataService implements SQLColumns{
   }
 
   public void insertIntoPaypalInfo(UUID uid, Userinfo userinfo) {
-    sqlRepo.insertToPaypalInfo(uid, userinfo);
+    sqlRepo.updatePaypalEmail(uid, userinfo);
   }
 
   public void insertUserToExpenditure(UUID uid, UUID eid){
