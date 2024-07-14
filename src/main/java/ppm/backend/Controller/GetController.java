@@ -22,9 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
 
 
 @RestController
@@ -61,7 +58,6 @@ public class GetController {
       test.put(user.getUserName(), abc);
     }
 
-    // Map<String, Double> calculatedCreditAndDebt = utilSvc.calcSummaryForUser(userList, UUID.fromString(uid));
     try {
       String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(test);
       return jsonString;
@@ -96,6 +92,8 @@ public class GetController {
       return "Unable to get expenditure";
     }
   }
+
+  // railway is being annoying
 
   @GetMapping("/expenditure/expenses/user/{uid}&{path}")
   public String getExpensesForOwner(@PathVariable String uid, @PathVariable String path) {
@@ -132,23 +130,5 @@ public class GetController {
       e.printStackTrace();
       return "Unable to get expenditures";
     }
-  }
-  
-
-
-  // @GetMapping("/expenditure/{path}/balance")
-  // public String getBalanceForExpenditure(@PathVariable String path) {
-  //   List<User> users = dataSvc.getBalanceForExpenditure(path);
-  //   try {
-  //     String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(users);
-  //     System.out.println(jsonString);
-  //     return jsonString;
-  //   } catch (JsonProcessingException e) {
-  //     e.printStackTrace();
-  //     return "Unable to get expenses";
-  //   }
-  // }
-  
-  
-  
+  }  
 }

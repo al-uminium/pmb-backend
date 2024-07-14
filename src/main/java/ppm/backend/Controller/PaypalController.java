@@ -2,18 +2,25 @@ package ppm.backend.Controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paypal.api.openidconnect.Userinfo;
 import com.paypal.api.payments.Amount;
@@ -54,8 +61,6 @@ public class PaypalController {
   @Autowired
   private DataService dataSvc;
 
-  private ObjectMapper mapper = new ObjectMapper();
-
   @GetMapping("link-account")
   public Map<String, String> linkAccount() {
     Map<String, String> response = new HashMap<>();
@@ -71,18 +76,52 @@ public class PaypalController {
     return response;
   }
 
+  // https://developer.paypal.com/docs/log-in-with-paypal/integrate/
+  // https://developer.paypal.com/docs/api/identity/v1/
+
+  private String getAccessTokenFromCode(String code) throws JsonMappingException, JsonProcessingException {
+    String url = "https://api-m.sandbox.paypal.com/v1/oauth2/token";
+    String credentials = clientId + ":" + clientSecret;
+    String encodedCreds = Base64.getEncoder().encodeToString(credentials.getBytes());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.set("Authorization", "Basic " + encodedCreds);
+
+    String body = "grant_type=authorization_code&code=" + code + "&redirect_uri=" + redirectUri;
+    HttpEntity<String> request = new HttpEntity<>(body, headers);
+
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+    // Extract access token from the response body
+    String responseBody = response.getBody();
+    JsonNode jsonResponse = new ObjectMapper().readTree(responseBody);
+    return jsonResponse.get("access_token").asText();
+  }
+
+  private Userinfo getUserInfo(String accessToken) {
+    String url = "https://api-m.sandbox.paypal.com/v1/identity/openidconnect/userinfo?schema=openid";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", "Bearer " + accessToken);
+
+    HttpEntity<String> request = new HttpEntity<>(headers);
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<Userinfo> response = restTemplate.exchange(url, HttpMethod.GET, request, Userinfo.class);
+
+    return response.getBody();
+  }
+
   @PostMapping("/link-account/code={authCode}")
   public ResponseEntity<String> completeLinkAccount(@PathVariable String authCode, @RequestBody User authUser) throws JsonProcessingException {
-    try {
-      System.out.println(authCode);
-      APIContext apiContext = new APIContext(clientId, clientSecret, "sandbox");
-      Userinfo userinfo = Userinfo.getUserinfo(apiContext);
-      dataSvc.insertIntoPaypalInfo(authUser.getUserId(), userinfo);
-      return ResponseEntity.ok(mapper.writeValueAsString(userinfo));
-    } catch (PayPalRESTException e) {
-      e.printStackTrace(); 
-      return null;
-    }
+    System.out.println(authCode);
+    String accessCode = getAccessTokenFromCode(authCode);
+    Userinfo userinfo = getUserInfo(accessCode);
+    System.out.println(userinfo.toString());
+
+    dataSvc.insertIntoPaypalInfo(authUser.getUserId(), userinfo);
+    return ResponseEntity.ok(userinfo.toJSON());
   }
 
   @PostMapping("/create-order")
@@ -145,5 +184,5 @@ public class PaypalController {
       
     return response;
   }
-  
+
 }

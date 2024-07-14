@@ -27,7 +27,7 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
   }
 
   public void insertToPaypalInfo (UUID uid, Userinfo userinfo) {
-    jdbcTemplate.update(INSERT_INTO_PAYPALINFO, uid.toString(), userinfo.getUserId(), userinfo.getEmail());
+    jdbcTemplate.update(INSERT_INTO_PAYPALINFO, uid.toString(), userinfo.getEmail());
   }
 
   public void updateBalance(Double balance, UUID uid) {
