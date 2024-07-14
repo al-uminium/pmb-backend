@@ -157,6 +157,6 @@ public interface SQLQueries {
 
   public static final String INSERT_INTO_PAYPALINFO =
   """
-    INSERT INTO PaypalInfo (user_id, paypal_id, paypal_email) VALUES (?, ?, ?)    
+    INSERT INTO PaypalInfo (user_id, paypal_email) VALUES (?, ?)    
   """;
 }
