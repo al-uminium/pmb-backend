@@ -155,6 +155,8 @@ public interface SQLQueries {
       WHERE eu.linked_user_id = ?;
     """;
 
+  // for some reason when i get user info from paypal i don't have the id? 
+  // adjusting the sql until i can find the fix, but it's not an issue. 
   public static final String INSERT_INTO_PAYPALINFO =
   """
     INSERT INTO PaypalInfo (user_id, paypal_email) VALUES (?, ?)    

@@ -79,7 +79,16 @@ public class PaypalController {
   // https://developer.paypal.com/docs/log-in-with-paypal/integrate/
   // https://developer.paypal.com/docs/api/identity/v1/
 
-  private String getAccessTokenFromCode(String code) throws JsonMappingException, JsonProcessingException {
+  // flow
+  // frontend -> user logs into paypal
+  // paypal -> returns auth code to front end
+  // frontend -> sends auth code to backend along with user for db storage
+  // backend -> receives auth code and user
+  // backend -> gen access code from auth code
+  // backend -> use access code to access open id api
+  // backend -> store user info into db for future use
+
+  private String getAccessToken(String code) throws JsonMappingException, JsonProcessingException {
     String url = "https://api-m.sandbox.paypal.com/v1/oauth2/token";
     String credentials = clientId + ":" + clientSecret;
     String encodedCreds = Base64.getEncoder().encodeToString(credentials.getBytes());
@@ -94,7 +103,6 @@ public class PaypalController {
     RestTemplate restTemplate = new RestTemplate();
     ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-    // Extract access token from the response body
     String responseBody = response.getBody();
     JsonNode jsonResponse = new ObjectMapper().readTree(responseBody);
     return jsonResponse.get("access_token").asText();
@@ -116,7 +124,7 @@ public class PaypalController {
   @PostMapping("/link-account/code={authCode}")
   public ResponseEntity<String> completeLinkAccount(@PathVariable String authCode, @RequestBody User authUser) throws JsonProcessingException {
     System.out.println(authCode);
-    String accessCode = getAccessTokenFromCode(authCode);
+    String accessCode = getAccessToken(authCode);
     Userinfo userinfo = getUserInfo(accessCode);
     System.out.println(userinfo.toString());
 
