@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.paypal.api.openidconnect.Userinfo;
+
 import ppm.backend.Model.User;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +24,10 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
   // insert into Expense (expense_id, owner_id, expenditure_id, expense_name, total_cost) VALUES (?, ?, ?, ?, ?)
   public void insertToExpenses(UUID eid, UUID uid, UUID exid, String eName, Double totalCost) {
     jdbcTemplate.update(INSERT_INTO_EXPENSES, eid.toString(), uid.toString(), exid.toString(), totalCost, eName);
+  }
+
+  public void insertToPaypalInfo (UUID uid, Userinfo userinfo) {
+    jdbcTemplate.update(INSERT_INTO_PAYPALINFO, uid.toString(), userinfo.getUserId(), userinfo.getEmail());
   }
 
   public void updateBalance(Double balance, UUID uid) {
@@ -46,6 +52,10 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
 
   public void insertToUserViaRegister(User user) {
     jdbcTemplate.update(INSERT_INTO_USER_VIA_LOGIN, user.getUserId().toString(), user.getUserName(), user.getPw(), user.getEmail());
+  }
+
+  public void patchLinkedUser(UUID loginUid, UUID selectedUid) {
+    jdbcTemplate.update(PATCH_LINKED_USER_ID, loginUid.toString(), selectedUid.toString());
   }
 
   public SqlRowSet getExpenditureFromPath(String path) {
@@ -74,6 +84,10 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
 
   public SqlRowSet getAttemptLogin(User user) {
     return jdbcTemplate.queryForRowSet(ATTEMPT_LOGIN, user.getEmail(), user.getPw());
+  }
+
+  public SqlRowSet getExpenditureForUser(UUID uid) {
+    return jdbcTemplate.queryForRowSet(GET_EXPENDITURES_FOR_AUTH_USER, uid.toString());
   }
   // public SqlRowSet getBalanceForExpenditure(String path) {
   //   return jdbcTemplate.queryForRowSet(GET_BALANCE_FOR_EXPENDITURE, path);

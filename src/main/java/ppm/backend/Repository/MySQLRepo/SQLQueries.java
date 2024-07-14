@@ -117,7 +117,7 @@ public interface SQLQueries {
 
   public static final String GET_USERS_FOR_EXPENDITURE = 
     """
-      SELECT u.username, eu.user_id, eu.balance
+      SELECT u.username, eu.user_id, eu.balance, u.email
       FROM Expenditure_User eu
       JOIN Invites i ON eu.expenditure_id = i.expenditure_id
       JOIN User u ON u.user_id = eu.user_id
@@ -139,32 +139,24 @@ public interface SQLQueries {
       WHERE email = ? AND hashpw = ?;
     """;
 
-
-  public static final String UPDATE_USER_ID =
+  public static final String PATCH_LINKED_USER_ID = 
   """
-  START TRANSACTION;
-
-    -- Replace 'old_user_id' and 'new_user_id' with actual user IDs
     UPDATE Expenditure_User
-    SET user_id = ?
-    WHERE user_id = ?;
-
-    UPDATE Expense_Users
-    SET user_id = ?
-    WHERE user_id = ?;
-
-    UPDATE Expense
-    SET owner_id = ?
-    WHERE owner_id = ?;
-
-  COMMIT;    
+    SET linked_user_id = ?
+    WHERE user_id = ?;    
   """;
-  // public static final String GET_BALANCE_FOR_EXPENDITURE = 
-  // """
-  //   SELECT eu.user_id, u.username, eu.balance
-  //   FROM Expenditure_User eu
-  //   JOIN Invites i on i.expenditure_id = eu.expenditure_id
-  //   JOIN User u on u.user_id = eu.user_id
-  //   WHERE i.invite_token = ?;    
-  // """;
+
+  public static final String GET_EXPENDITURES_FOR_AUTH_USER = 
+    """
+      SELECT e.expenditure_id, e.expenditure_name, i.invite_token
+      FROM Expenditures e
+      JOIN Expenditure_User eu ON eu.expenditure_id = e.expenditure_id
+      JOIN Invites i on i.expenditure_id = e.expenditure_id
+      WHERE eu.linked_user_id = ?;
+    """;
+
+  public static final String INSERT_INTO_PAYPALINFO =
+  """
+    INSERT INTO PaypalInfo (user_id, paypal_id, paypal_email) VALUES (?, ?, ?)    
+  """;
 }

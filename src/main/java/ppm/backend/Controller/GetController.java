@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping(value = "/api/get", method = RequestMethod.GET)
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class GetController {
   @Autowired
   private DataService dataSvc;
@@ -121,6 +121,21 @@ public class GetController {
     }
   }
   
+  @GetMapping("/user/{uid}")
+  public String getExpendituresForUser(@PathVariable String uid) {
+    UUID userId = UUID.fromString(uid);
+    List<Expenditure> expenditures = dataSvc.getExpendituresForUser(userId);
+    try {
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expenditures);
+      return jsonString;
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      return "Unable to get expenditures";
+    }
+  }
+  
+
+
   // @GetMapping("/expenditure/{path}/balance")
   // public String getBalanceForExpenditure(@PathVariable String path) {
   //   List<User> users = dataSvc.getBalanceForExpenditure(path);

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paypal.api.openidconnect.Userinfo;
 
 import ppm.backend.Model.Expenditure;
 import ppm.backend.Model.Expense;
@@ -46,14 +47,6 @@ public class DataService implements SQLColumns{
     return exid;
   }
 
-  // public JsonNode createUser(String username) {
-  //   UUID uid = UUID.randomUUID();
-  //   sqlRepo.insertToUser(uid, username);
-  //   Map<String, UUID> insertedUser = new HashMap<>();
-  //   insertedUser.put(username, uid);
-  //   return mapper.valueToTree(insertedUser);
-  // }
-
   public JsonNode createUsers(List<User> users) {
     Map<String, UUID> insertedUsers = new HashMap<>();
     for (User user : users) {
@@ -65,10 +58,11 @@ public class DataService implements SQLColumns{
     return mapper.valueToTree(insertedUsers);
   }
 
-  public void createLoginUser(User user) {
+  public User createLoginUser(User user) {
     UUID userId = UUID.randomUUID();
     user.setUserId(userId);
     sqlRepo.insertToUserViaRegister(user);
+    return user;
   }
 
   public User attemptLogin(User user) {
@@ -79,6 +73,10 @@ public class DataService implements SQLColumns{
     } else {
       return new User();
     }
+  }
+
+  public void insertIntoPaypalInfo(UUID uid, Userinfo userinfo) {
+    sqlRepo.insertToPaypalInfo(uid, userinfo);
   }
 
   public void insertUserToExpenditure(UUID uid, UUID eid){
@@ -116,7 +114,6 @@ public class DataService implements SQLColumns{
     UUID eid = createExpenditure(expenditureName, currency);
     JsonNode createdUsers = createUsers(users);
     for (JsonNode user : createdUsers) {
-      // System.out.println("printing... " + user.asText());
       insertUserToExpenditure(UUID.fromString(user.asText()), eid);
     }
     sqlRepo.insertToInvites(eid, inviteToken);
@@ -140,12 +137,6 @@ public class DataService implements SQLColumns{
       UUID exid = UUID.fromString(rs.getString(EXPENDITURE_ID));
       String eName = rs.getString(EXPENDITURE_NAME);
       String defCurrency = rs.getString(DEFAULT_CURRENCY);
-
-      // I'll deal with the date issue next time...
-      // Instant createdDate = utilSvc.convertStringToInstant(rs.getString(CREATED_AT));
-      // Instant updateDate = utilSvc.convertStringToInstant(rs.getString(UPDATED_AT));
-      // expenditure.setCreatedDate(createdDate);
-      // expenditure.setUpdatedDate(updateDate);
       expenditure.setDefaultCurrency(defCurrency);
       expenditure.setExid(exid);
       expenditure.setExpenditureName(eName);
@@ -153,6 +144,16 @@ public class DataService implements SQLColumns{
       expenditure.setExpenses(expenseList);
     }
     return expenditure;
+  }
+
+  public List<Expenditure> getExpendituresForUser(UUID uid) {
+    SqlRowSet rs = sqlRepo.getExpenditureForUser(uid);
+    List<Expenditure> expenditureList = new LinkedList<>();
+    while (rs.next()) {
+      Expenditure expenditure = new Expenditure().createExpenditure(rs);
+      expenditureList.add(expenditure);
+    }
+    return expenditureList;
   }
 
   public List<Expense> getExpenseDetails(String path){
@@ -195,9 +196,6 @@ public class DataService implements SQLColumns{
     SqlRowSet rs = sqlRepo.getUsersOfExpenditure(path);
 
     while(rs.next()) {
-      // UUID uid = UUID.fromString(rs.getString(USER_ID));
-      // String userName = rs.getString(USERNAME);
-      // Double balance = rs.getDouble(BALANCE);
       User user = new User(rs, false);
       usersList.add(user);
     }
@@ -205,17 +203,9 @@ public class DataService implements SQLColumns{
     return usersList;
   }
 
-  // public List<User> getBalanceForExpenditure(String path){
-  //   List<User> users = new LinkedList<>();
-  //   SqlRowSet rs = sqlRepo.getBalanceForExpenditure(path);
-  //   System.out.println(path);
-  //   while (rs.next()) {
-  //     User user = new User(rs);
-  //     users.add(user);
-  //   }
-
-  //   return users;
-  // }
+  public void patchLinkedUserId(UUID loginUid, UUID selectedUid) {
+    sqlRepo.patchLinkedUser(loginUid, selectedUid);
+  }
 
   // Not putting it under Expense bc there's a mongo call inside ):
   public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {

@@ -11,6 +11,7 @@ import ppm.backend.Model.User;
 import ppm.backend.Service.DataService;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping(value = "/api/post", method = RequestMethod.POST)
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 public class PostController {
 
   @Autowired
@@ -67,9 +68,9 @@ public class PostController {
 
   @PostMapping("/register")
   public ResponseEntity<String> createUserViaRegister(@RequestBody User user) throws JsonProcessingException {
-    dataSvc.createLoginUser(user);
+    User createdUser = dataSvc.createLoginUser(user);
       
-    return ResponseEntity.ok(mapper.writeValueAsString("Created"));
+    return ResponseEntity.ok(mapper.writeValueAsString(createdUser));
   }
 
   @PostMapping("/login")
@@ -77,6 +78,13 @@ public class PostController {
     User loginUser = dataSvc.attemptLogin(user);
       
     return ResponseEntity.ok(mapper.writeValueAsString(loginUser));
+  }
+  
+  @PostMapping("/link-account")
+  public void postMethodName(@RequestBody List<User> data) {
+    User loginUser = data.getFirst();
+    User selectedUser = data.getLast();
+    dataSvc.patchLinkedUserId(loginUser.getUserId(), selectedUser.getUserId());
   }
   
   

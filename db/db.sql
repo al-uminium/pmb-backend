@@ -14,6 +14,14 @@ create table User (
   PRIMARY KEY (user_id)
 );
 
+create table PaypalInfo (
+  user_id CHAR(36) NOT NULL,
+  paypal_id VARCHAR(255),
+  paypal_email VARCHAR(255),
+  FOREIGN KEY (user_id) REFERENCES User (user_id),
+  PRIMARY KEY (user_id)
+);
+
 create table Expenditures (
   expenditure_id CHAR(36) NOT NULL, 
   expenditure_name VARCHAR(255) NOT NULL, 
@@ -48,6 +56,7 @@ CREATE TABLE Expense_Users (
 create table Expenditure_User (
   expenditure_id CHAR(36), 
   user_id CHAR(36), 
+  linked_user_id CHAR(36),
   balance DECIMAL(10,2) DEFAULT 0.00,
   PRIMARY KEY (expenditure_id, user_id),
   FOREIGN KEY (expenditure_id) REFERENCES Expenditures (expenditure_id),
