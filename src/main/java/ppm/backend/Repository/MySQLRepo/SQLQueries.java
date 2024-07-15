@@ -162,12 +162,12 @@ public interface SQLQueries {
   """
     UPDATE User
     SET paypalEmail = ?
-    WHERE user_id = ?
+    WHERE user_id = ?;
   """;
 
   public static final String GET_PAYPAL_EMAIL =
   """
     SELECT * from User
-    WHERE user_id = ?    
+    WHERE user_id = ?;  
   """;
 }
