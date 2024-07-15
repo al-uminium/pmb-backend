@@ -189,6 +189,7 @@ public class PaypalController {
     APIContext apiContext = new APIContext(clientId, clientSecret, "sandbox");
     try {
       Payment payment = Payment.get(apiContext, data.get("paymentId"));
+      payment.setIntent("sale");
       PaymentExecution paymentExecution = new PaymentExecution();
       paymentExecution.setPayerId(data.get("payerId"));
       Payment executedPayment = payment.execute(apiContext, paymentExecution);
