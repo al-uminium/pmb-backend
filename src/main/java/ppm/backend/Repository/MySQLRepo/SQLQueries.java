@@ -165,9 +165,9 @@ public interface SQLQueries {
     WHERE user_id = ?
   """;
 
-  public static final String GET_PAYPAL_INFO_FOR_USER =
+  public static final String GET_PAYPAL_EMAIL =
   """
-    SELECT * FROM PaypalInfo
+    SELECT * from User
     WHERE user_id = ?    
   """;
 }

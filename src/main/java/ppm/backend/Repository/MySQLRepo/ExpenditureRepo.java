@@ -30,6 +30,10 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
     jdbcTemplate.update(UPDATE_PAYPAL_EMAIL, userinfo.getEmail(), uid.toString());
   }
 
+  public void updatePaypalEmail(UUID uid, String email) {
+    jdbcTemplate.update(UPDATE_PAYPAL_EMAIL, email, uid.toString());
+  }
+
   public void updateBalance(Double balance, UUID uid) {
     jdbcTemplate.update(UPDATE_BALANCE, balance, uid.toString());
   }
@@ -89,8 +93,8 @@ public class ExpenditureRepo implements SQLQueries, SQLColumns {
   public SqlRowSet getExpenditureForUser(UUID uid) {
     return jdbcTemplate.queryForRowSet(GET_EXPENDITURES_FOR_AUTH_USER, uid.toString());
   }
-  
-  public SqlRowSet getPaypalInfoForUser(UUID uid) {
-    return jdbcTemplate.queryForRowSet(GET_PAYPAL_INFO_FOR_USER, uid.toString()); 
+
+  public SqlRowSet getPaypalEmail(UUID uid) {
+    return jdbcTemplate.queryForRowSet(GET_PAYPAL_EMAIL, uid.toString());
   }
 }

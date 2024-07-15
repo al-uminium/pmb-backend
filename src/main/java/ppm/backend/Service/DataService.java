@@ -205,6 +205,14 @@ public class DataService implements SQLColumns{
     sqlRepo.patchLinkedUser(loginUid, selectedUid);
   }
 
+  public void updateLinkedPaypalEmail(User loginUser, User selectedUser) {
+    SqlRowSet rs = sqlRepo.getPaypalEmail(loginUser.getUserId());
+    if (!(rs.getString(PAYPAL_EMAIL) == null)) {
+      String paypalEmail = rs.getString(PAYPAL_EMAIL);
+      sqlRepo.updatePaypalEmail(selectedUser.getUserId(), paypalEmail);
+    }
+  }
+
   // Not putting it under Expense bc there's a mongo call inside ):
   public List<Expense> convertRowSetToExpenseList(SqlRowSet rs) {
     List<Expense> expenseList = new LinkedList<>();

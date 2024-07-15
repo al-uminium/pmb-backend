@@ -85,6 +85,7 @@ public class PostController {
     User loginUser = data.getFirst();
     User selectedUser = data.getLast();
     dataSvc.patchLinkedUserId(loginUser.getUserId(), selectedUser.getUserId());
+    dataSvc.updateLinkedPaypalEmail(loginUser, selectedUser); //if it exists
   }
   
   
