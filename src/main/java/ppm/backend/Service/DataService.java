@@ -207,6 +207,7 @@ public class DataService implements SQLColumns{
 
   public void updateLinkedPaypalEmail(User loginUser, User selectedUser) {
     SqlRowSet rs = sqlRepo.getPaypalEmail(loginUser.getUserId());
+    rs.next();
     if (!(rs.getString(PAYPAL_EMAIL) == null)) {
       String paypalEmail = rs.getString(PAYPAL_EMAIL);
       sqlRepo.updatePaypalEmail(selectedUser.getUserId(), paypalEmail);
