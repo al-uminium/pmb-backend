@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/paypal")
-@CrossOrigin
+@CrossOrigin(origins = "https://www.paymeback.wtf")
 public class PaypalController {
   @Value("${paypal.client.id}")
   private String clientId;

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping(value = "/api/get", method = RequestMethod.GET)
-@CrossOrigin
+@CrossOrigin(origins = "https://www.paymeback.wtf")
 public class GetController {
   @Autowired
   private DataService dataSvc;

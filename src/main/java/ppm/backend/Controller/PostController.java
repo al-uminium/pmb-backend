@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping(value = "/api/post", method = RequestMethod.POST)
-@CrossOrigin
+@CrossOrigin(origins = "https://www.paymeback.wtf")
 public class PostController {
 
   @Autowired
