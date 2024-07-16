@@ -27,7 +27,7 @@ create table Expenditures (
 CREATE TABLE Expense (
   expense_id CHAR(36) NOT NULL,
   owner_id VARCHAR(36) NOT NULL,
-  total_cost INT NOT NULL,
+  total_cost DECIMAL(10,2) NOT NULL,
   expenditure_id VARCHAR(36) NOT NULL,
   expense_name VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

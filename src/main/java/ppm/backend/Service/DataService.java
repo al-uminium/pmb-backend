@@ -82,6 +82,12 @@ public class DataService implements SQLColumns{
   }
 
   public Document createExpenseInMongo(Map<String, Double> map, UUID eid, UUID exid) {
+    // https://stackoverflow.com/questions/73915391/rounding-down-a-float-number-to-2-decimal-points-in-java
+    // Using BigDecimal method:
+    for (Map.Entry<String, Double> entry : map.entrySet()) {
+      entry.setValue(utilSvc.roundToTwoDecimals(entry.getValue()));
+    }
+
     Document doc = new Document(map);
     doc.append("eid", eid.toString());
     doc.append("exid", exid.toString());
@@ -91,6 +97,9 @@ public class DataService implements SQLColumns{
 
   @Transactional(rollbackFor = SQLException.class)
   public void createExpenseInDB(Expense expense) {
+    // Make sure it's rounded to 2 decimal places for total cost
+    Double totalCost = expense.getTotalCost();
+    expense.setTotalCost(utilSvc.roundToTwoDecimals(totalCost));
     sqlRepo.insertToExpenses(expense.getEid(), expense.getExpenseOwner().getUserId(), expense.getExid(), expense.getExpenseName(), expense.getTotalCost());
 
     Double totalOwed = 0.0;

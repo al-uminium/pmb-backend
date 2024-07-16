@@ -1,5 +1,7 @@
 package ppm.backend.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -111,12 +113,18 @@ public class UtilService {
         System.out.println("Going thru " + user.getUserName() + "'s accumulated credit...");
         if (userDebt.getKey().equals(targetUser.getUserName())) {
           System.out.println(targetUser.getUserName() + " owes " + user.getUserName() + " " +  userDebt.getValue());
-          Double debt = userDebt.getValue();
-          Double credit = targetUser.getAccumulatedCredit().get(user.getUserName());
-          System.out.println("Sanity check... ");
-          System.out.println(targetUser.getUserName() + ": " + credit);
-          System.out.println(user.getUserName() + ": -" + debt);
-          costMap.put(user.getUserName(), credit - debt);
+          try {
+            Double debt = userDebt.getValue();
+            Double credit = targetUser.getAccumulatedCredit().get(user.getUserName());
+            System.out.println("Sanity check... ");
+            System.out.println(targetUser.getUserName() + ": " + credit);
+            System.out.println(user.getUserName() + ": -" + debt);
+            costMap.put(user.getUserName(), credit - debt);
+          } catch (NullPointerException e) {
+            Double debt = userDebt.getValue();
+            Double credit = 0.0;
+            costMap.put(user.getUserName(), credit - debt);
+          }
         } 
       }
     }
@@ -140,5 +148,8 @@ public class UtilService {
     return instant;
   }
 
-
+  public Double roundToTwoDecimals(Double num) {
+    BigDecimal rounded = new BigDecimal(num).setScale(2, RoundingMode.HALF_UP);
+    return rounded.doubleValue();
+  }
 }
