@@ -113,18 +113,19 @@ public class UtilService {
         System.out.println("Going thru " + user.getUserName() + "'s accumulated credit...");
         if (userDebt.getKey().equals(targetUser.getUserName())) {
           System.out.println(targetUser.getUserName() + " owes " + user.getUserName() + " " +  userDebt.getValue());
+          Double debt = 0.0;
+          Double credit = 0.0;
           try {
-            Double debt = userDebt.getValue();
-            Double credit = targetUser.getAccumulatedCredit().get(user.getUserName());
+            debt = userDebt.getValue();
+            credit = targetUser.getAccumulatedCredit().get(user.getUserName());
             System.out.println("Sanity check... ");
             System.out.println(targetUser.getUserName() + ": " + credit);
             System.out.println(user.getUserName() + ": -" + debt);
-            costMap.put(user.getUserName(), credit - debt);
+            costMap.put(user.getUserName(), roundToTwoDecimals(credit - debt));
           } catch (NullPointerException e) {
-            Double debt = userDebt.getValue();
-            Double credit = 0.0;
-            costMap.put(user.getUserName(), credit - debt);
+            credit = 0.0;
           }
+          costMap.put(user.getUserName(), roundToTwoDecimals(credit - debt));
         } 
       }
     }

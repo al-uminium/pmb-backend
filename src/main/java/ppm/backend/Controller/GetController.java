@@ -51,15 +51,15 @@ public class GetController {
   @GetMapping("/expenditure/{path}/balance/settlements")
   public String getCostSummaryForExpenditure(@PathVariable String path) {
     List<User> userList = dataSvc.getExpenseSummaryOfAllUsers(path);
-    Map<String, Map<String,Double>> test = new HashMap<>();
+    Map<String, Map<String,Double>> settlements = new HashMap<>();
 
     for (User user : userList) {
-      Map<String, Double> abc = utilSvc.calcSummaryForUser(userList, user.getUserId());
-      test.put(user.getUserName(), abc);
+      Map<String, Double> userSettlements = utilSvc.calcSummaryForUser(userList, user.getUserId());
+      settlements.put(user.getUserName(), userSettlements);
     }
 
     try {
-      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(test);
+      String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(settlements);
       return jsonString;
     } catch (JsonProcessingException e) {
       e.printStackTrace();
