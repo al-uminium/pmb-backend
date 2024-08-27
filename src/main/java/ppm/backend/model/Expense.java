@@ -12,8 +12,11 @@ public class Expense {
   UUID eid; 
   String title; 
   Currency currency;
-  List<Member> members; 
+  Member owner;
+  Integer totalCost;
+  List<Member> participants; 
   Map<Member, Integer> ledger;
   LocalDateTime createdAt;
   LocalDateTime updatedAt;
+  String attachmentUrl;
 }

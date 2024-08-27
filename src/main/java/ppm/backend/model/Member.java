@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class Member {
   UUID mid;
-  UUID linkedUser; 
+  UUID uid; 
   String name;
 }
