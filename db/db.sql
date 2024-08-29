@@ -14,12 +14,12 @@ CREATE TABLE User(
 );
 
 
-CREATE TABLE Expense_Group(
+CREATE TABLE Group_(
   gid CHAR(36) NOT NULL,
   group_name VARCHAR(255) NOT NULL,
   token CHAR(36) NOT NULL, 
   default_currency CHAR(3) NOT NULL,
-  created_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (gid)
 );
 
@@ -38,9 +38,9 @@ CREATE TABLE Expense(
   title VARCHAR(255) NOT NULL, 
   currency CHAR(3) NOT NULL, 
   total_cost DECIMAL (10, 2) NOT NULL,
-  created_at DATETIME,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (gid) REFERENCES Expense_Group (gid),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (gid) REFERENCES Group_ (gid),
   FOREIGN KEY (owner_mid) REFERENCES Member (mid),
   PRIMARY KEY (eid)
 );
