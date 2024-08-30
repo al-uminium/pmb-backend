@@ -15,8 +15,10 @@ public class Expense {
   Member owner;
   Integer totalCost;
   List<Member> participants; 
-  Map<Member, Integer> ledger;
   LocalDateTime createdAt;
   LocalDateTime updatedAt;
   String attachmentUrl;
+  // using string to avoid custom serializer/deserializers
+  // string will be referring to mid of members.
+  Map<String, Integer> ledger;
 }
