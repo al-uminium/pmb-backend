@@ -7,7 +7,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class Group {
+public class ExpenseGroup {
   UUID gid; 
   String token;
   String name;

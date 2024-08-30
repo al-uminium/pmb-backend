@@ -9,5 +9,5 @@ public class User {
   String username; 
   UUID uid;
   String email;
-  List<Group> groups;
+  List<ExpenseGroup> expenseGroups;
 }

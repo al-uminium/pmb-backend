@@ -4,24 +4,24 @@ public interface SQLQueries {
 
   // INSERTS
 
-  public static final String INSERT_INTO_GROUP = 
+  String INSERT_INTO_EXPENSE_GROUP =
   """
-    INSERT INTO Group_ (gid, group_name, token, default_currency) (?, ?, ?, ?)    
+    INSERT INTO expense_group (gid, group_name, token, default_currency) VALUES (?, ?, ?, ?)
   """;
   
-  public static final String INSERT_INTO_MEMBER = 
+  String INSERT_INTO_MEMBER =
   """
-    INSERT INTO Member (mid, name) (?, ?)    
+    INSERT INTO member (mid, name) VALUES (?, ?)
   """;
 
-  public static final String INSERT_INTO_EXPENSE =
+  String INSERT_INTO_EXPENSE =
   """
-    INSERT INTO Expense (eid, gid, owner_mid, title, currency, total_cost) (?, ?, ?, ?, ?)  
+    INSERT INTO Expense (eid, gid, owner_mid, title, currency, total_cost) VALUES (?, ?, ?, ?, ?)
   """;
 
-  public static final String INSERT_INTO_EXPENSE_PARTICIPANTS =
+  String INSERT_INTO_EXPENSE_PARTICIPANTS =
   """
-    INSERT INTO Expense_Participants (eid, mid) (?, ?)    
+    INSERT INTO Expense_Participants (eid, mid) (?, ?)
   """;
 
   // UPDATES
