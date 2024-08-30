@@ -1,24 +1,24 @@
 package ppm.backend.repo;
 
 public interface SQLColumns {
-  public static final String UID = "uid";
-  public static final String USERNAME = "username";
-  public static final String EMAIL = "email";
-  public static final String HASHED_PW = "hashed_password";
+  String UID = "uid";
+  String USERNAME = "username";
+  String EMAIL = "email";
+  String HASHED_PW = "hashed_password";
 
-  public static final String GID = "gid";
-  public static final String GROUP_NAME = "group_name";
-  public static final String TOKEN = "token";
-  public static final String DEFAULT_CURRENCY = "default_currency";
-  public static final String CREATED_AT = "created_at";
+  String GID = "gid";
+  String GROUP_NAME = "group_name";
+  String TOKEN = "token";
+  String DEFAULT_CURRENCY = "default_currency";
+  String CREATED_AT = "created_at";
 
-  public static final String MID = "mid";
-  public static final String NAME = "name";
+  String MID = "mid";
+  String NAME = "name";
 
-  public static final String EID = "eid";
-  public static final String OWNER_MID = "owner_mid";
-  public static final String TITLE = "title";
-  public static final String CURRENCY = "currency";
-  public static final String TOTAL_COST = "total_cost";
-  public static final String UPDATED_AT = "updated_at";
+  String EID = "eid";
+  String OWNER_MID = "owner_mid";
+  String TITLE = "title";
+  String CURRENCY = "currency";
+  String TOTAL_COST = "total_cost";
+  String UPDATED_AT = "updated_at";
 }
