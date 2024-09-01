@@ -25,7 +25,7 @@ public interface SQLQueries {
 
   String INSERT_INTO_EXPENSE_PARTICIPANTS =
   """
-    INSERT INTO Expense_Participants (eid, mid) (?, ?)
+    INSERT INTO Expense_Participants (eid, mid) VALUES (?, ?)
   """;
 
   // GET

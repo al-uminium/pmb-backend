@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import ppm.backend.model.Expense;
 import ppm.backend.model.ExpenseGroup;
+import ppm.backend.model.Ledger;
 import ppm.backend.model.Member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -59,6 +60,16 @@ public class SQLRepo implements SQLQueries, SQLColumns{
             expense.getCurrency().toString(),
             expense.getTotalCost()
     );
+  }
+
+  public void insertIntoExpenseParticipants(Expense expense) throws DataAccessException {
+    for (Ledger ledger: expense.getParticipants()) {
+      jdbcTemplate.update(
+              INSERT_INTO_EXPENSE_PARTICIPANTS,
+              expense.getEid().toString(),
+              ledger.member().getMid().toString()
+      );
+    }
   }
 
   public SqlRowSet getCountOfTokenInstance(String token) throws DataAccessException {

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import lombok.Data;
+import org.bson.Document;
 
 @Data
 public class Expense {
@@ -14,11 +15,9 @@ public class Expense {
   Currency currency;
   Member owner;
   Double totalCost;
-  List<Member> participants; 
+  List<Ledger> participants;
+  Document createdLedger;
   LocalDateTime createdAt;
   LocalDateTime updatedAt;
   String attachmentUrl;
-  // using string to avoid custom serializer/deserializers
-  // string will be referring to mid of members.
-  Map<String, Double> ledger;
 }

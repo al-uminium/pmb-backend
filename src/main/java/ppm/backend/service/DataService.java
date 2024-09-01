@@ -1,9 +1,11 @@
 package ppm.backend.service;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -13,16 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 import ppm.backend.model.Expense;
 import ppm.backend.model.ExpenseGroup;
 import ppm.backend.model.Member;
+import ppm.backend.repo.MongoRepo;
 import ppm.backend.repo.SQLRepo;
 
 @Service
 public class DataService {
   @Autowired
   private SQLRepo repo;
+
+  @Autowired
+  private MongoService mongoSvc;
+
   @Autowired
   private HelperService helperSvc;
 
-  @Transactional
+  @Transactional(rollbackFor = SQLException.class)
   public ExpenseGroup createGroup(ExpenseGroup group) {
     UUID gid = UUID.randomUUID();
     String token = helperSvc.generateInviteToken(36);
@@ -54,14 +61,17 @@ public class DataService {
     return Optional.empty();
   }
 
+  @Transactional(rollbackFor = SQLException.class)
   public Optional<Expense> createExpense(Expense expense, String token) {
-    UUID eid = UUID.randomUUID();
-    Optional<UUID> opt = getGidFromToken(token);
-    if (opt.isPresent()) {
-      UUID gid = opt.get();
+    Optional<UUID> gid = getGidFromToken(token);
+    if (gid.isPresent()) {
+      UUID eid = UUID.randomUUID();
       expense.setEid(eid);
       try {
-        repo.insertIntoExpense(expense, gid);
+        repo.insertIntoExpense(expense, gid.get());
+        repo.insertIntoExpenseParticipants(expense);
+        Document ledger =  mongoSvc.createLedger(gid.get(), expense);
+        expense.setCreatedLedger(ledger);
         return Optional.of(expense);
       } catch (DataAccessException e) {
         throw new RuntimeException(e);

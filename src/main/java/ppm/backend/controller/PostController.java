@@ -35,6 +35,7 @@ public class PostController {
 
     @PostMapping("/expense/{token}")
     public ResponseEntity<String> createExpense(@RequestBody Expense expense, @PathVariable String token) {
+//        return ResponseEntity.ok(expense.toString());
         Optional<Expense> opt = dataSvc.createExpense(expense, token);
         if (opt.isPresent()) {
             try {
