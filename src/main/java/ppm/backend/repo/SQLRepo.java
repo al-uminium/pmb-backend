@@ -2,12 +2,17 @@ package ppm.backend.repo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
+import ppm.backend.model.Expense;
 import ppm.backend.model.ExpenseGroup;
 import ppm.backend.model.Member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.xml.crypto.Data;
+import java.util.UUID;
 
 @Repository
 public class SQLRepo implements SQLQueries, SQLColumns{
@@ -16,19 +21,47 @@ public class SQLRepo implements SQLQueries, SQLColumns{
 
   public void insertIntoGroup(ExpenseGroup expenseGroup) throws DataAccessException {
     jdbcTemplate.update(
-      INSERT_INTO_EXPENSE_GROUP,
-      expenseGroup.getGid().toString(),
-      expenseGroup.getName(),
-      expenseGroup.getToken(),
-      expenseGroup.getDefaultCurrency().toString()
+            INSERT_INTO_EXPENSE_GROUP,
+            expenseGroup.getGid().toString(),
+            expenseGroup.getName(),
+            expenseGroup.getToken(),
+            expenseGroup.getDefaultCurrency().toString()
     );
+  }
+
+  public SqlRowSet getGidFromToken(String token) {
+    return jdbcTemplate.queryForRowSet(GET_EXPENSE_GROUP_FROM_TOKEN, token);
   }
 
   public void insertIntoMember(Member member) throws DataAccessException {
     jdbcTemplate.update(
-      INSERT_INTO_MEMBER,
-      member.getMid().toString(),
-      member.getName()
+            INSERT_INTO_MEMBER,
+            member.getMid().toString(),
+            member.getName()
     );
+  }
+
+  public void insertIntoGroupMembers(ExpenseGroup group, Member member) throws DataAccessException {
+    jdbcTemplate.update(
+            INSERT_INTO_GROUP_MEMBERS,
+            group.getGid().toString(),
+            member.getMid().toString()
+    );
+  }
+
+  public void insertIntoExpense(Expense expense, UUID gid) throws DataAccessException {
+    jdbcTemplate.update(
+            INSERT_INTO_EXPENSE,
+            expense.getEid().toString(),
+            gid.toString(),
+            expense.getOwner().getMid().toString(),
+            expense.getTitle(),
+            expense.getCurrency().toString(),
+            expense.getTotalCost()
+    );
+  }
+
+  public SqlRowSet getCountOfTokenInstance(String token) throws DataAccessException {
+    return jdbcTemplate.queryForRowSet(UNIQUE_CHECK_FOR_TOKEN, token);
   }
 }

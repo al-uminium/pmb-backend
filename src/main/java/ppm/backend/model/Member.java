@@ -1,7 +1,6 @@
 package ppm.backend.model;
 
 import java.util.UUID;
-
 import lombok.Data;
 
 @Data

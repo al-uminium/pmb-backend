@@ -9,16 +9,16 @@ import lombok.Data;
 
 @Data
 public class Expense {
-  UUID eid; 
+  UUID eid;
   String title; 
   Currency currency;
   Member owner;
-  Integer totalCost;
+  Double totalCost;
   List<Member> participants; 
   LocalDateTime createdAt;
   LocalDateTime updatedAt;
   String attachmentUrl;
   // using string to avoid custom serializer/deserializers
   // string will be referring to mid of members.
-  Map<String, Integer> ledger;
+  Map<String, Double> ledger;
 }

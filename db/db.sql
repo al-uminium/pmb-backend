@@ -31,6 +31,14 @@ CREATE TABLE member(
   PRIMARY KEY (mid)
 );
 
+CREATE TABLE group_members(
+    gid CHAR(36) NOT NULL,
+    mid CHAR(36) NOT NULL,
+    PRIMARY KEY (gid, mid),
+    FOREIGN KEY (gid) REFERENCES expense_group (gid),
+    FOREIGN KEY (mid) REFERENCES member (mid)
+);
+
 CREATE TABLE expense(
   eid CHAR(36) NOT NULL,
   gid CHAR(36) NOT NULL, 
