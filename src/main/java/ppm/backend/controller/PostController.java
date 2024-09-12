@@ -9,17 +9,16 @@ import ppm.backend.model.Expense;
 
 import org.springframework.http.ResponseEntity;
 import ppm.backend.model.ExpenseGroup;
-import ppm.backend.service.DataService;
+import ppm.backend.service.InsertService;
 
 import java.util.Optional;
-import java.util.UUID;
 
 
 @RestController
 @RequestMapping(value = "/api/post", method = RequestMethod.POST)
 public class PostController {
     @Autowired
-    private DataService dataSvc;
+    private InsertService dataSvc;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -35,7 +34,6 @@ public class PostController {
 
     @PostMapping("/expense/{token}")
     public ResponseEntity<String> createExpense(@RequestBody Expense expense, @PathVariable String token) {
-//        return ResponseEntity.ok(expense.toString());
         Optional<Expense> opt = dataSvc.createExpense(expense, token);
         if (opt.isPresent()) {
             try {

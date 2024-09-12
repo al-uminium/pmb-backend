@@ -12,7 +12,6 @@ import ppm.backend.model.Member;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 @Repository
@@ -63,7 +62,7 @@ public class SQLRepo implements SQLQueries, SQLColumns{
   }
 
   public void insertIntoExpenseParticipants(Expense expense) throws DataAccessException {
-    for (Ledger ledger: expense.getParticipants()) {
+    for (Ledger ledger: expense.getLedgerParticipants()) {
       jdbcTemplate.update(
               INSERT_INTO_EXPENSE_PARTICIPANTS,
               expense.getEid().toString(),
@@ -74,5 +73,9 @@ public class SQLRepo implements SQLQueries, SQLColumns{
 
   public SqlRowSet getCountOfTokenInstance(String token) throws DataAccessException {
     return jdbcTemplate.queryForRowSet(UNIQUE_CHECK_FOR_TOKEN, token);
+  }
+
+  public SqlRowSet getExpenseDetails(UUID eid) throws DataAccessException {
+    return jdbcTemplate.queryForRowSet(GET_EXPENSE_DETAILS, eid.toString());
   }
 }

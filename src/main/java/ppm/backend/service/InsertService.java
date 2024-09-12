@@ -15,11 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ppm.backend.model.Expense;
 import ppm.backend.model.ExpenseGroup;
 import ppm.backend.model.Member;
-import ppm.backend.repo.MongoRepo;
 import ppm.backend.repo.SQLRepo;
 
 @Service
-public class DataService {
+public class InsertService {
   @Autowired
   private SQLRepo repo;
 
@@ -70,7 +69,7 @@ public class DataService {
       try {
         repo.insertIntoExpense(expense, gid.get());
         repo.insertIntoExpenseParticipants(expense);
-        Document ledger =  mongoSvc.createLedger(gid.get(), expense);
+        Document ledger =  mongoSvc.createLedgerInMongo(gid.get(), expense);
         expense.setCreatedLedger(ledger);
         return Optional.of(expense);
       } catch (DataAccessException e) {

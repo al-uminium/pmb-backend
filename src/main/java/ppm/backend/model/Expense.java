@@ -2,7 +2,6 @@ package ppm.backend.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import lombok.Data;
@@ -11,13 +10,24 @@ import org.bson.Document;
 @Data
 public class Expense {
   UUID eid;
-  String title; 
+  String title;
   Currency currency;
   Member owner;
   Double totalCost;
-  List<Ledger> participants;
+  List<Ledger> ledgerParticipants;
   Document createdLedger;
   LocalDateTime createdAt;
   LocalDateTime updatedAt;
   String attachmentUrl;
+
+  public Expense() {}
+
+  public Expense(UUID eid, String title, Currency currency, Double totalCost, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    this.eid = eid;
+    this.title = title;
+    this.currency = currency;
+    this.totalCost = totalCost;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 }

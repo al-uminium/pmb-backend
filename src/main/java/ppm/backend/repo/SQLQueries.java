@@ -32,6 +32,14 @@ public interface SQLQueries {
   String GET_EXPENSE_GROUP_FROM_TOKEN = """
           SELECT gid FROM expense_group WHERE token = ?;
           """;
+
+  String GET_EXPENSE_DETAILS = """
+          SELECT e.eid, e.gid, e.title, e.currency, e.total_cost, e.created_at, e.updated_at, e.owner_mid AS mid, m.name, m.uid
+             FROM expense e
+             JOIN member m ON e.owner_mid = m.mid
+             WHERE e.eid = ?;
+          """;
+
   // UPDATES
 
 
