@@ -75,7 +75,15 @@ public class SQLRepo implements SQLQueries, SQLColumns{
     return jdbcTemplate.queryForRowSet(UNIQUE_CHECK_FOR_TOKEN, token);
   }
 
-  public SqlRowSet getExpenseDetails(UUID eid) throws DataAccessException {
+  public SqlRowSet getExpenseDetail(UUID eid) throws DataAccessException {
     return jdbcTemplate.queryForRowSet(GET_EXPENSE_DETAILS, eid.toString());
+  }
+
+  public SqlRowSet getAllExpenseDetailsForGroup(String token) throws DataAccessException {
+    return jdbcTemplate.queryForRowSet(GET_ALL_EXPENSE_DETAILS_FOR_EXPENSE_GROUP, token);
+  }
+
+  public SqlRowSet getCountOfExpensesInGroup(String token) throws DataAccessException {
+    return jdbcTemplate.queryForRowSet(GET_COUNT_OF_EXPENSES_IN_GROUP, token);
   }
 }

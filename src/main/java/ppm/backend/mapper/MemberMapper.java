@@ -1,10 +1,10 @@
 package ppm.backend.mapper;
 
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import ppm.backend.interfaces.DataMapper;
 import ppm.backend.model.Member;
 import ppm.backend.repo.SQLColumns;
 
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;

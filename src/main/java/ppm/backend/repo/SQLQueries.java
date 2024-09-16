@@ -39,12 +39,25 @@ public interface SQLQueries {
              JOIN member m ON e.owner_mid = m.mid
              WHERE e.eid = ?;
           """;
+  String GET_ALL_EXPENSE_DETAILS_FOR_EXPENSE_GROUP = """
+          SELECT e.eid, e.title, e.currency, e.total_cost, e.created_at, e.updated_at, e.owner_mid AS mid,
+              m.name, m.uid
+              FROM expense_group eg
+              JOIN expense e ON eg.gid = e.gid
+              JOIN member m ON m.mid = e.owner_mid
+          	WHERE eg.token = ?;
+          """;
 
   // UPDATES
 
 
   // COUNT
   String UNIQUE_CHECK_FOR_TOKEN = """
-          SELECT count(*) AS count FROM expense_group WHERE token = ?;
+          SELECT COUNT(*) AS count FROM expense_group WHERE token = ?;
+          """;
+  String GET_COUNT_OF_EXPENSES_IN_GROUP = """
+          SELECT COUNT(*) AS count FROM expense_group eg
+          	JOIN expense e ON eg.gid = e.gid
+              WHERE eg.token = ?;
           """;
 } 

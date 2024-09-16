@@ -22,10 +22,11 @@ public class Expense {
 
   public Expense() {}
 
-  public Expense(UUID eid, String title, Currency currency, Double totalCost, LocalDateTime createdAt, LocalDateTime updatedAt) {
+  public Expense(UUID eid, String title, Currency currency, Member owner, Double totalCost, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.eid = eid;
     this.title = title;
     this.currency = currency;
+    this.owner = owner;
     this.totalCost = totalCost;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

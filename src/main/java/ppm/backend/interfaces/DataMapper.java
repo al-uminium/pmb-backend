@@ -1,4 +1,4 @@
-package ppm.backend.mapper;
+package ppm.backend.interfaces;
 
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 

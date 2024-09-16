@@ -1,6 +1,7 @@
 package ppm.backend.mapper;
 
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import ppm.backend.interfaces.DataMapper;
 import ppm.backend.model.ExpenseGroup;
 import ppm.backend.repo.SQLColumns;
 

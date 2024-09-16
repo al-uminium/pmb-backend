@@ -11,6 +11,7 @@ public interface SQLColumns {
   String TOKEN = "token";
   String DEFAULT_CURRENCY = "default_currency";
   String CREATED_AT = "created_at";
+  String COUNT = "count";
 
   String MID = "mid";
   String NAME = "name";

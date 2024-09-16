@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import ppm.backend.mapper.CountMapper;
 import ppm.backend.model.Expense;
 import ppm.backend.model.ExpenseGroup;
 import ppm.backend.model.Member;
@@ -19,6 +20,7 @@ import ppm.backend.repo.SQLRepo;
 
 @Service
 public class InsertService {
+  private final CountMapper countMapper = new CountMapper();
   @Autowired
   private SQLRepo repo;
 
@@ -49,13 +51,12 @@ public class InsertService {
   }
 
   private Optional<UUID> getGidFromToken(String token) {
-    SqlRowSet count_rs = repo.getCountOfTokenInstance(token);
-    if (count_rs.next()) {
-      if (count_rs.getInt("count") == 1) {
-        SqlRowSet rs = repo.getGidFromToken(token);
-        rs.next();
-        return Optional.of(UUID.fromString(Objects.requireNonNull(rs.getString("gid"))));
-      }
+    SqlRowSet countResult = repo.getCountOfTokenInstance(token);
+    Integer countCheck = countMapper.map(countResult);
+    if (countCheck == 1) {
+      SqlRowSet rs = repo.getGidFromToken(token);
+      rs.next();
+      return Optional.of(UUID.fromString(Objects.requireNonNull(rs.getString("gid"))));
     }
     return Optional.empty();
   }
